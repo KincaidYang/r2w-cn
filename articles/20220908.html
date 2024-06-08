@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>为什么添加一些解析的时候记录值（域名）后面会带个点？ | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="很多朋友可能会发现，在添加 CNAME、MX、NS 等记录的时候，记录值后面通常会自动补充一个”.”（如下图），那为什么会自动添加这个”.”呢？  为什么会自动添加”.”呢？DNS 命名空间结构要知到答案，那首先我们应该了解一下 DNS 的层次结构，域名空间实际上是一个树状结构（大概像下图），在这个“树”中任何一个节点完整的域名都是从root到该节点路径上所有标签的逆序组合，或从该节点到root">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么添加一些解析的时候记录值（域名）后面会带个点？">
+<meta property="og:url" content="https://r2wind.cn/articles/20220908.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="很多朋友可能会发现，在添加 CNAME、MX、NS 等记录的时候，记录值后面通常会自动补充一个”.”（如下图），那为什么会自动添加这个”.”呢？  为什么会自动添加”.”呢？DNS 命名空间结构要知到答案，那首先我们应该了解一下 DNS 的层次结构，域名空间实际上是一个树状结构（大概像下图），在这个“树”中任何一个节点完整的域名都是从root到该节点路径上所有标签的逆序组合，或从该节点到root">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202209/tree-736885.jpg">
+<meta property="article:published_time" content="2022-09-08T01:16:16.000Z">
+<meta property="article:modified_time" content="2022-09-08T01:49:16.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="DNSPod">
+<meta property="article:tag" content="域名">
+<meta property="article:tag" content="解析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202209/tree-736885.jpg"><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20220908.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-71N712DFV3"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-71N712DFV3')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-71N712DFV3', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '为什么添加一些解析的时候记录值（域名）后面会带个点？',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-08 09:49:16'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="归去如风"><span class="site-name">归去如风</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">为什么添加一些解析的时候记录值（域名）后面会带个点？</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-08T01:16:16.000Z" title="发表于 2022-09-08 09:16:16">2022-09-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-08T01:49:16.000Z" title="更新于 2022-09-08 09:49:16">2022-09-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="为什么添加一些解析的时候记录值（域名）后面会带个点？"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><blockquote>
+<p>很多朋友可能会发现，在添加 CNAME、MX、NS 等记录的时候，记录值后面通常会自动补充一个”.”（如下图），那为什么会自动添加这个”.”呢？<br><img src="https://resources.r2wind.cn/img/202209/20220907093624.png" alt="DNSPod控制台"></p>
+</blockquote>
+<h2 id="为什么会自动添加”-”呢？"><a href="#为什么会自动添加”-”呢？" class="headerlink" title="为什么会自动添加”.”呢？"></a>为什么会自动添加”.”呢？</h2><h3 id="DNS-命名空间结构"><a href="#DNS-命名空间结构" class="headerlink" title="DNS 命名空间结构"></a>DNS 命名空间结构</h3><p>要知到答案，那首先我们应该了解一下 DNS 的层次结构，域名空间实际上是一个树状结构（大概像下图），在这个“树”中任何一个节点完整的域名都是从root到该节点路径上所有标签的逆序组合，或从该节点到root路径上所有标签的顺序组合，中间以”.”分隔。<br><img src="https://resources.r2wind.cn/img/202209/domains.png" alt="域名空间"><br>以本站首页域名为例，从”r2wind”到根域名”root”，所以该节点完整的域名则为”r2wind.cn.”（最后面的”.”代表 root，实际上是以”.”和一个空标签结尾的），但为了方便通常写成一个单独的”.”这种写法也被称为完全限定域名 (FQDN) 。</p>
+<p>只不过平时在访问的时候，我们通常不会写成”r2wind.cn.”这种形式，而是直接写成”r2wind.cn”，但是在解析系统中这个点是不允许被省略的，不然可能会出现一些奇奇怪怪的问题，当然最重要的是要符合RFC的相关规范。</p>
+<blockquote>
+<p>有关 RFC 的详细信息，可访问互联网工程工作组 (IETF) 的官网查看：<a target="_blank" rel="noopener" href="https://www.ietf.org/">IETF | Internet Engineering Task Force</a></p>
+</blockquote>
+<h3 id="递归-DNS-解析过程"><a href="#递归-DNS-解析过程" class="headerlink" title="递归 DNS 解析过程"></a>递归 DNS 解析过程</h3><p>估计到现在大家可能还可能有点懵，那我们再来看看递归 DNS 解析过程，来帮助大家的理解：<br>下面是一个完整的递归 DNS 解析过程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">rttw@Kincaid:~$ dig www.r2wind.cn +trace</span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.19.4-1+0~20220818.83+debian11~1.gbp3f0f1b-Debian &lt;&lt;&gt;&gt; www.r2wind.cn +trace</span><br><span class="line">;; global options: +cmd</span><br><span class="line">.                       0       IN      NS      f.root-servers.net.</span><br><span class="line">.                       0       IN      NS      e.root-servers.net.</span><br><span class="line">.                       0       IN      NS      j.root-servers.net.</span><br><span class="line">.                       0       IN      NS      i.root-servers.net.</span><br><span class="line">.                       0       IN      NS      g.root-servers.net.</span><br><span class="line">.                       0       IN      NS      b.root-servers.net.</span><br><span class="line">.                       0       IN      NS      d.root-servers.net.</span><br><span class="line">.                       0       IN      NS      h.root-servers.net.</span><br><span class="line">.                       0       IN      NS      c.root-servers.net.</span><br><span class="line">.                       0       IN      NS      k.root-servers.net.</span><br><span class="line">.                       0       IN      NS      l.root-servers.net.</span><br><span class="line">.                       0       IN      NS      m.root-servers.net.</span><br><span class="line">.                       0       IN      NS      a.root-servers.net.</span><br><span class="line">;; Received 432 bytes from 192.168.192.1<span class="comment">#53(192.168.192.1) in 859 ms</span></span><br><span class="line"><span class="comment"># 递归返回根域名服务器的 NS 记录</span></span><br><span class="line"></span><br><span class="line">cn.                     172800  IN      NS      a.dns.cn.</span><br><span class="line">cn.                     172800  IN      NS      d.dns.cn.</span><br><span class="line">cn.                     172800  IN      NS      e.dns.cn.</span><br><span class="line">cn.                     172800  IN      NS      c.dns.cn.</span><br><span class="line">cn.                     172800  IN      NS      b.dns.cn.</span><br><span class="line">cn.                     172800  IN      NS      ns.cernet.net.</span><br><span class="line">cn.                     172800  IN      NS      g.dns.cn.</span><br><span class="line">cn.                     172800  IN      NS      f.dns.cn.</span><br><span class="line">cn.                     86400   IN      DS      57724 8 2 5D0423633EB24A499BE78AA22D1C0C9BA36218FF49FD95A4CDF1A4AD 97C67044</span><br><span class="line">cn.                     86400   IN      RRSIG   DS 8 1 86400 20220920040000 20220907030000 20826 . Pir1xOUL//xWJtc9ey7zZJDmwSPnXHGGLTHpxxuOKwxchQkQvoSYGtCG L6YrRWEpFputpuFpK3DvPCbtPZQMje1Mr2H4vT7nZ47ht0Xr2brWSDlR maELk8iKsuNYwoJ3fL75yn1N0jEABxnYFfo9r4Pp0nfN0XVAIHvAiGE8 nhEFSmmmEZidrLfPT84+QKeXOc8fotDme/Byi5F3Uc3IRu8mq7BE/N/+ 4nXAVgXbWhO9/ULnlAK76bFqoz0qZmvrcrmSB08K//QVG4io+4nbpFyl dUlziRCAiT6h7L6WwK9XDBeWNhSMptvYJRVS01rC2X7OWqKvnU2fL/Bs FYzCSg==</span><br><span class="line">;; Received 708 bytes from 202.12.27.33<span class="comment">#53(m.root-servers.net) in 99 ms</span></span><br><span class="line"><span class="comment"># 根域名服务器返回 cn 域名的 NS 记录</span></span><br><span class="line"></span><br><span class="line">;; UDP setup with 2001:dc7::1<span class="comment">#53(2001:dc7::1) for www.r2wind.cn failed: network unreachable.</span></span><br><span class="line">;; UDP setup with 2001:dc7::1<span class="comment">#53(2001:dc7::1) for www.r2wind.cn failed: network unreachable.</span></span><br><span class="line">;; UDP setup with 2001:dc7::1<span class="comment">#53(2001:dc7::1) for www.r2wind.cn failed: network unreachable.</span></span><br><span class="line">r2wind.cn.              86400   IN      NS      ns3.dnsv4.com.</span><br><span class="line">r2wind.cn.              86400   IN      NS      ns4.dnsv4.com.</span><br><span class="line">3QDAQA092EE5BELP64A74EBNB8J53D7E.cn. 21600 IN NSEC3 1 1 10 AEF123AB 3QHKTF6LTFG8AAFUUAJSR8RVAJP99SFU NS SOA RRSIG DNSKEY NSEC3PARAM</span><br><span class="line">3QDAQA092EE5BELP64A74EBNB8J53D7E.cn. 21600 IN RRSIG NSEC3 8 2 21600 20220929034902 20220830024902 38388 cn. nQpTOptIW40mn9r1uPSO/yIvyEcdfV/zhfXVU/nZptRs+gDk8MYnqO7c i3yXB2XYzZFXM3ofDWXIJHgHq42agy02zSkDKN3XabB0Y6F2Oy3FhFBP O5fNM97I5Nu1NEE2ZZ5XyGAfMZyNhjsOry66+56C4s/Dlu1LcE151vey ecY=</span><br><span class="line">8TF4MEBDESE2OSVH717D9VC1F7BFN1VI.cn. 21600 IN NSEC3 1 1 10 AEF123AB 8TKMCNJ923RR3GI4UAK4FF8RHB788CNF CNAME RRSIG</span><br><span class="line">8TF4MEBDESE2OSVH717D9VC1F7BFN1VI.cn. 21600 IN RRSIG NSEC3 8 2 21600 20220929034902 20220830024902 38388 cn. MgMG/eoy7e3ugs4TjsTxf5Ji9mvFsYYJpM+e4LayayDIMzs3JpkdKgEn ba3BmaaKclE6aDe8iL0uYSNiUMRgfMJb10yg066tDn+6bQH7BHl0paNY REZMB/+idFumyB3icj+JjCxrQe7j2fPp6aQUv3VBaEVLrp22XbnWZsbx scI=</span><br><span class="line">;; Received 608 bytes from 202.112.0.44<span class="comment">#53(ns.cernet.net) in 29 ms</span></span><br><span class="line"><span class="comment"># cn 域名服务器返回 r2wind.cn. 的 NS 记录</span></span><br><span class="line"></span><br><span class="line">www.r2wind.cn.          600     IN      A       120.78.190.225</span><br><span class="line">r2wind.cn.              86400   IN      NS      ns4.dnsv4.com.</span><br><span class="line">r2wind.cn.              86400   IN      NS      ns3.dnsv4.com.</span><br><span class="line">;; Received 112 bytes from 1.12.0.25<span class="comment">#53(ns3.dnsv4.com) in 39 ms</span></span><br><span class="line"><span class="comment"># r2wind.cn 域名服务器返回 www.r2wind.cn. 的 A 记录</span></span><br></pre></td></tr></table></figure>
+<p>由上面一大串的流程中可以看到查询是从根开始进行查询的，然后根据返回的各个域名 NS 记录进行查询，直到查询到最终的 A 记录。</p>
+<p>可能你会好奇，为什么要有根？</p>
+<p>根的主要作用是管理互联网的主目录。可以设想一下，如果没有根，以查询 <strong>tencent.com</strong> 为例，在查询解析的时候你得先找到 com 的 NS 记录及其对应的 IP 地址，然后才能获取到 <strong>tencent.com</strong> 的 NS记录 继续进行递归查询。</p>
+<p>不知道这里会不会有人说那我挨个获取就好了，何必需要根呢？<br>不得不说这是个好问题，但理想很丰满，现实很骨感，目前全球共有1591个 TLD ，你可以试想一下，你获取这些 TLD 的 NS 记录需要多长时间，而且这些 TLD 的 NS 记录是不断变化的，如果你要想自己维护的话，头大不说，还可能会有很多隐患。交给根他不香嘛？</p>
+<h3 id="域名分级"><a href="#域名分级" class="headerlink" title="域名分级"></a>域名分级</h3><p>提到这里，那我们再说说域名分级，我们平时能注册到的域名到底是几级域名呢？</p>
+<p>答案是二级。</p>
+<p>那域名究竟是如何分级的？<br>回到上面的树状图，我们可以看到，root 下面有若干个顶级域名，例如：cn、com、org、edu等等，这些被称为顶级域名或者一级域名；这些顶级域名下面又分为若干个二级域名，以 cn 为例，下面有若干个二级域名，例如：dnspod、r2wind，而二级域名下面可能又会分为若干个三级域名，以 dnspod 为例，下面又分为了若干个三级域名，例如：www、docs、console 等等，以此类推，这就是域名的分级。</p>
+<p>总结一下域名分级规则：</p>
+<ul>
+<li>顶级域名（TLD）：顶级域是root的子域，例如：com；</li>
+<li>一级域名（FLD）：一级域也是root的子域（一级域和顶级域是同一个概念）；</li>
+<li>二级域名（SLD）：二级域是一级域的子域，例如：tencent.com是 com 的子域；</li>
+<li>依此类推…..</li>
+</ul>
+<h2 id="加”-”会影响解析嘛？"><a href="#加”-”会影响解析嘛？" class="headerlink" title="加”.”会影响解析嘛？"></a>加”.”会影响解析嘛？</h2><p>仔细看看上面的解析过程，除了一开始输入命令的时候后面没有”.”，剩下其他域名哪个后面没有”.”呢？<br>在 DNS 中，加”.”不会影响解析，但是不加”.”可能就是另一个故事（事故）啦。所以当你设置相关的记录不能解析的时候，别再怪后面自动加了”.”，找找其他的原因吧。</p>
+<p>下面是一个有趣的例子，我查询的是 me，却返回了 me.r2wind.cn的 A 记录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@Kincaid:~<span class="comment"># nslookup me 8.8.8.8</span></span><br><span class="line">Server:         8.8.8.8</span><br><span class="line">Address:        8.8.8.8<span class="comment">#53</span></span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line">Name:   me.r2wind.cn</span><br><span class="line">Address: 106.52.72.124</span><br></pre></td></tr></table></figure>
+<p>这是因为我设置了主机的本地域名，所以系统会自动在后面添加上 r2wind.cn，但当我在查询 me 加了”.”后，可以看到报错了，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@Kincaid:~<span class="comment"># nslookup me. 8.8.8.8</span></span><br><span class="line">;; communications error to 8.8.8.8<span class="comment">#53: timed out</span></span><br><span class="line">Server:         8.8.8.8</span><br><span class="line">Address:        8.8.8.8<span class="comment">#53</span></span><br><span class="line"></span><br><span class="line">Non-authoritative answer:</span><br><span class="line">*** Can<span class="string">&#x27;t find me: No answer</span></span><br></pre></td></tr></table></figure>
+<p>报错的原因也很简单，加”.”系统会认为你查询的是一个完整的域名，这种情况下系统不会在后面添加本地域名，而是直接进行递归查询，但 me 这个域是没有解析 A&#x2F;AAAA 记录的，所以就会报错。</p>
+<p>这里不知道会不会有人说顶级域哪有解析 A&#x2F;AAAA 记录的，感兴趣的话你可以去访问一下 <a target="_blank" rel="noopener" href="http://ai./">http://ai./</a> 这个顶级域。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@Kincaid:~<span class="comment"># dig ai. @8.8.8.8</span></span><br><span class="line"></span><br><span class="line">; &lt;&lt;&gt;&gt; DiG 9.19.4-1+0~20220818.83+debian11~1.gbp3f0f1b-Debian &lt;&lt;&gt;&gt; ai. @8.8.8.8</span><br><span class="line">;; global options: +cmd</span><br><span class="line">;; Got answer:</span><br><span class="line">;; -&gt;&gt;HEADER&lt;&lt;- <span class="string">opcode: QUERY, status: NOERROR, id: 15833</span></span><br><span class="line"><span class="string">;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">;; OPT PSEUDOSECTION:</span></span><br><span class="line"><span class="string">; EDNS: version: 0, flags:; udp: 512</span></span><br><span class="line"><span class="string">;; QUESTION SECTION:</span></span><br><span class="line"><span class="string">;ai.                            IN      A</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">;; ANSWER SECTION:</span></span><br><span class="line"><span class="string">ai.                     21600   IN      A       209.59.119.34</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">;; Query time: 319 msec</span></span><br><span class="line"><span class="string">;; SERVER: 8.8.8.8#53(8.8.8.8) (UDP)</span></span><br><span class="line"><span class="string">;; WHEN: Thu Sep 08 08:29:01 CST 2022</span></span><br><span class="line"><span class="string">;; MSG SIZE  rcvd: 47</span></span><br></pre></td></tr></table></figure>
+<p>是不是有人想问域名 ai 的后缀是什么？是根 (root) 。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>好像说了好多废话哈哈哈，总结一下吧：</p>
+<ul>
+<li>不要觉得加”.”很奇怪，如果你觉得奇怪，建议抽空了解一下 DNS 相关的知识吧。</li>
+<li>加”.”不会影响解析！加”.”不会影响解析！加”.”不会影响解析！——重要的事情说三遍</li>
+<li>由于博主的水平有限，文章中可能会有一些错误，欢迎各位大佬批评指正。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc1034">RFC 1034</a></li>
+<li><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc1035">RFC 1035</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.iana.org/domains/root/db">Root Zone Database</a></li>
+<li>DNS and BIND, 5th Edition,by Cricket Lliu and Paul Albitz(O’Reilly).Copyright 2006, O’Reilly Media, Inc. ISBN: 0-596-10057-4.</li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/windows/win32/dns/dns-standards-documents">DNS 标准文档</a></li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>附上一些区域文件：<br><a target="_blank" rel="noopener" href="https://www.internic.net/domain/db.cache">https://www.internic.net/domain/db.cache</a><br><a target="_blank" rel="noopener" href="https://www.internic.net/domain/root.zone">https://www.internic.net/domain/root.zone</a><br><a target="_blank" rel="noopener" href="https://www.internic.net/domain/arpa.zone">https://www.internic.net/domain/arpa.zone</a><br><a target="_blank" rel="noopener" href="https://www.internic.net/domain/ip6.arpa.zone">https://www.internic.net/domain/ip6.arpa.zone</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20220908.html">https://r2wind.cn/articles/20220908.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DNSPod/">DNSPod</a><a class="post-meta__tags" href="/tags/%E5%9F%9F%E5%90%8D/">域名</a><a class="post-meta__tags" href="/tags/%E8%A7%A3%E6%9E%90/">解析</a></div><div class="post_share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202209/tree-736885.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/articles/20221006.html" title="关于“指向 Github 静态托管页面引起腾讯云免费证书无法签发”问题的解决方案"><img class="cover" src="https://resources.r2wind.cn/img/202210/little-boom-7362108_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">关于“指向 Github 静态托管页面引起腾讯云免费证书无法签发”问题的解决方案</div></div></a></div><div class="next-post pull-right"><a href="/articles/20220810.html" title="腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案"><img class="cover" src="https://resources.r2wind.cn/img/202208/hohenzollern-7370477_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/articles/20211030.html" title="在DNSPod解析的域名如何设置DDNS(动态域名解析)"><img class="cover" src="https://resources.r2wind.cn/img/sea-164989_1280.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-30</div><div class="title">在DNSPod解析的域名如何设置DDNS(动态域名解析)</div></div></a></div><div><a href="/articles/20230108.html" title="使用 DNSPod 拉平 CNAME 记录（CDN 场景）"><img class="cover" src="https://resources.r2wind.cn/img/202301/clouds-7689828_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-08</div><div class="title">使用 DNSPod 拉平 CNAME 记录（CDN 场景）</div></div></a></div><div><a href="/articles/20210809.html" title="DNS解析出现问题怎么办？"><img class="cover" src="https://resources.r2wind.cn/img/mountain-6320288_1280.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-10</div><div class="title">DNS解析出现问题怎么办？</div></div></a></div><div><a href="/articles/20220522.html" title="DNS+IGTM实现访问流量智能调度"><img class="cover" src="https://resources.r2wind.cn/img/202205/seascape-4636549_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-22</div><div class="title">DNS+IGTM实现访问流量智能调度</div></div></a></div><div><a href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 &#x2F; 腾讯云（DNSPod）API 密钥版本）"><img class="cover" src="https://resources.r2wind.cn/img/202309/storm-8244663_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-14</div><div class="title">使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 &#x2F; 腾讯云（DNSPod）API 密钥版本）</div></div></a></div><div><a href="/articles/20221020.html" title="如何正确变更 DNSPod 解析套餐（降级场景）"><img class="cover" src="https://resources.r2wind.cn/img/202210/bridge-7504605_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-20</div><div class="title">如何正确变更 DNSPod 解析套餐（降级场景）</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">小泽</div><div class="author-info__description">一个自由自在的互联网民工</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E8%87%AA%E5%8A%A8%E6%B7%BB%E5%8A%A0%E2%80%9D-%E2%80%9D%E5%91%A2%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">为什么会自动添加”.”呢？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DNS-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">DNS 命名空间结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E5%BD%92-DNS-%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">递归 DNS 解析过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E5%90%8D%E5%88%86%E7%BA%A7"><span class="toc-number">1.3.</span> <span class="toc-text">域名分级</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E2%80%9D-%E2%80%9D%E4%BC%9A%E5%BD%B1%E5%93%8D%E8%A7%A3%E6%9E%90%E5%98%9B%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">加”.”会影响解析嘛？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-number">5.</span> <span class="toc-text">其他</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202403/boat-8614314_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3">使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2024-03-07T00:06:30.000Z" title="发表于 2024-03-07 08:06:30">2024-03-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240227.html" title="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口"><img src="https://resources.r2wind.cn/img/202402/desert-8592629_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口"/></a><div class="content"><a class="title" href="/articles/20240227.html" title="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口">利用腾讯云轻量应用服务器搭建 WHOIS 查询接口</a><time datetime="2024-02-27T11:08:00.000Z" title="发表于 2024-02-27 19:08:00">2024-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240109.html" title="什么是 CNAME 展平？"><img src="https://resources.r2wind.cn/img/202401/fields-8489339_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是 CNAME 展平？"/></a><div class="content"><a class="title" href="/articles/20240109.html" title="什么是 CNAME 展平？">什么是 CNAME 展平？</a><time datetime="2024-01-09T10:21:49.000Z" title="发表于 2024-01-09 18:21:49">2024-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20231127.html" title="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务"><img src="https://resources.r2wind.cn/img/202311/sunset-8401670_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务"/></a><div class="content"><a class="title" href="/articles/20231127.html" title="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务">BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务</a><time datetime="2023-11-27T09:10:54.000Z" title="发表于 2023-11-27 17:10:54">2023-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）"><img src="https://resources.r2wind.cn/img/202309/storm-8244663_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）"/></a><div class="content"><a class="title" href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）">使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）</a><time datetime="2023-09-14T11:12:50.000Z" title="发表于 2023-09-14 19:12:50">2023-09-14</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://resources.r2wind.cn/background.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2024 By 小泽</div><div class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://mirrors.r2wind.cn/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>
