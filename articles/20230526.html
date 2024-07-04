@@ -1,0 +1,290 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Nginx 编译开启 Quic 或 HTTP/3 | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="随着最近 Nginx-Quic 分支被合并到了 Nginx 主线，Nginx 1.25.0 版本官方二进制包已经支持 Quic&#x2F;HTTP3，感兴趣的朋友可以前往 https:&#x2F;&#x2F;nginx.org&#x2F;en&#x2F;download.html 或 https:&#x2F;&#x2F;nginx.org&#x2F;en&#x2F;linux_packages.html 下载安装，体验一下 Quic&#x2F;HTTP3 的魅力，本文将主要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx 编译开启 Quic 或 HTTP&#x2F;3">
+<meta property="og:url" content="https://r2wind.cn/articles/20230526.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="随着最近 Nginx-Quic 分支被合并到了 Nginx 主线，Nginx 1.25.0 版本官方二进制包已经支持 Quic&#x2F;HTTP3，感兴趣的朋友可以前往 https:&#x2F;&#x2F;nginx.org&#x2F;en&#x2F;download.html 或 https:&#x2F;&#x2F;nginx.org&#x2F;en&#x2F;linux_packages.html 下载安装，体验一下 Quic&#x2F;HTTP3 的魅力，本文将主要">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202305/dandelion-445228_1920.jpg">
+<meta property="article:published_time" content="2023-05-26T14:30:30.000Z">
+<meta property="article:modified_time" content="2024-04-11T00:06:30.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="建站">
+<meta property="article:tag" content="Nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202305/dandelion-445228_1920.jpg"><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20230526.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>(()=>{
+      const saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+      
+      window.btf = {
+        saveToLocal: saveToLocal,
+        getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+          script.src = url
+          script.async = true
+          script.onerror = reject
+          script.onload = script.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            script.onload = script.onreadystatechange = null
+            resolve()
+          }
+
+          Object.keys(attr).forEach(key => {
+            script.setAttribute(key, attr[key])
+          })
+
+          document.head.appendChild(script)
+        }),
+
+        getCSS: (url, id = false) => new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+          link.rel = 'stylesheet'
+          link.href = url
+          if (id) link.id = id
+          link.onerror = reject
+          link.onload = link.onreadystatechange = function() {
+            const loadState = this.readyState
+            if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+            link.onload = link.onreadystatechange = null
+            resolve()
+          }
+          document.head.appendChild(link)
+        }),
+
+        addGlobalFn: (key, fn, name = false, parent = window) => {
+          const pjaxEnable = false
+          if (!pjaxEnable && key.startsWith('pjax')) return
+
+          const globalFn = parent.globalFn || {}
+          const keyObj = globalFn[key] || {}
+    
+          if (name && keyObj[name]) return
+    
+          name = name || Object.keys(keyObj).length
+          keyObj[name] = fn
+          globalFn[key] = keyObj
+          parent.globalFn = globalFn
+        }
+      }
+    
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+      
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })()</script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-71N712DFV3"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-71N712DFV3')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-71N712DFV3', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nginx 编译开启 Quic 或 HTTP/3',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-11 08:06:30'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 7.2.0"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="归去如风"><span class="site-name">归去如风</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Nginx 编译开启 Quic 或 HTTP/3</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-05-26T14:30:30.000Z" title="发表于 2023-05-26 22:30:30">2023-05-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-04-11T00:06:30.000Z" title="更新于 2024-04-11 08:06:30">2024-04-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Nginx 编译开启 Quic 或 HTTP/3"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><blockquote>
+<p>随着最近 Nginx-Quic 分支被合并到了 Nginx 主线，Nginx 1.25.0 版本官方二进制包已经支持 Quic&#x2F;HTTP3，感兴趣的朋友可以前往 <a target="_blank" rel="noopener" href="https://nginx.org/en/download.html">https://nginx.org/en/download.html</a> 或 <a target="_blank" rel="noopener" href="https://nginx.org/en/linux_packages.html">https://nginx.org/en/linux_packages.html</a> 下载安装，体验一下 Quic&#x2F;HTTP3 的魅力，本文将主要为您介绍如何通过编译的方式开启 Quic&#x2F;HTTP3。</p>
+</blockquote>
+<blockquote>
+<p>2024年04月11日更新：大部分系统下默认存在着<code>www-data</code>用户组和<code>www-data</code>用户，所以不再使用原来的<code>www</code>用户和<code>www</code>用户组进行编译。</p>
+</blockquote>
+<div class="note info flat"><p>2024年03月07日更新：最终使用 C++ 链接构建 Nginx，以解决 BoringSSL 编译问题。<br>2024年02月20日更新：通过在 Nginx 邮件社区讨论得到了一个解决方案，可以将 libssl 构建为共享库来解决这个问题，详见 <a target="_blank" rel="noopener" href="https://mailman.nginx.org/pipermail/nginx/2024-February/5N5IXG7BI66D5AIKORCYPVVVJTZYMUR6.html">https://mailman.nginx.org/pipermail/nginx/2024-February/5N5IXG7BI66D5AIKORCYPVVVJTZYMUR6.html</a> ，可以根据需要自行尝试。<br>2024年02月19日更新：由于谷歌的 BoringSSL 现在发布了一个破坏性的更新，所以导致编译出错，本文临时将克隆到的 BoringSSL 版本修改为 c39e6cd9ec5acebb6de2adffc03cfe03b07f08ab 这个 commit。<br>2023年11月19日更新：修复了Nginx_brotli编译错误的问题。<br>2023年06月22日更新：更新了关于 HTTP&#x2F;2 的配置，Nginx 已经弃用了 listen 指令中的 http2 参数，改为 <code>http2 on;</code>，详见 <a target="_blank" rel="noopener" href="https://hg.nginx.org/nginx/rev/08ef02ad5c54">https://hg.nginx.org/nginx/rev/08ef02ad5c54</a> 和 <a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_v2_module.html">https://nginx.org/en/docs/http/ngx_http_v2_module.html</a> ，如您之前参照过本文编译安装 Nginx，请您重新编译安装后修改配置,可参照<a href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">示例配置</a>。</p>
+</div>
+
+<h2 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Debian 11或12</span></span><br><span class="line">apt update</span><br><span class="line">apt install build-essential ca-certificates zlib1g-dev libpcre3 libpcre3-dev tar unzip libssl-dev wget curl git cmake ninja-build mercurial libunwind-dev pkg-config</span><br><span class="line"><span class="comment"># Ubuntu 22.04或20.04</span></span><br><span class="line">sudo su</span><br><span class="line"><span class="built_in">cd</span> /root</span><br><span class="line">apt update</span><br><span class="line">apt install build-essential ca-certificates zlib1g-dev libpcre3 libpcre3-dev tar unzip libssl-dev wget curl git cmake ninja-build mercurial libunwind-dev pkg-config</span><br><span class="line"><span class="comment"># CentOS 8 Stream/TencentOS Server 3.1</span></span><br><span class="line">dnf update</span><br><span class="line">dnf install gcc gcc-c++ pcre-devel openssl-devel zlib-devel cmake make libunwind-devel hg git wget</span><br><span class="line"><span class="comment"># OpenCloudOS Server 8</span></span><br><span class="line">dnf update</span><br><span class="line">dnf install gcc gcc-c++ pcre-devel openssl-devel zlib-devel cmake make hg git wget</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Go"><a href="#安装Go" class="headerlink" title="安装Go"></a>安装Go</h2><h3 id="下载并解压"><a href="#下载并解压" class="headerlink" title="下载并解压"></a>下载并解压</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://dl.google.com/go/go1.22.1.linux-amd64.tar.gz</span><br><span class="line"><span class="built_in">rm</span> -rf /usr/local/go &amp;&amp; tar -C /usr/local -xzf go1.22.1.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+<div class="note warning flat"><p>请注意系统架构，本文以 x86_64 为例，如果你的系统架构不是 x86_64，请自行修改下载链接。</p>
+</div>
+
+<h3 id="添加环境变量"><a href="#添加环境变量" class="headerlink" title="添加环境变量"></a>添加环境变量</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/usr/local/go/bin</span><br></pre></td></tr></table></figure>
+
+<p>具体可参考<a target="_blank" rel="noopener" href="https://go.dev/doc/install">https://go.dev/doc/install</a></p>
+<h3 id="验证是否安装成功"><a href="#验证是否安装成功" class="headerlink" title="验证是否安装成功"></a>验证是否安装成功</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go version</span><br></pre></td></tr></table></figure>
+
+<h3 id="考虑国内用户访问官方较慢，故设置代理"><a href="#考虑国内用户访问官方较慢，故设置代理" class="headerlink" title="考虑国内用户访问官方较慢，故设置代理"></a>考虑国内用户访问官方较慢，故设置代理</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> GOPROXY=https://mirrors.cloud.tencent.com/go/</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译-boringssl"><a href="#编译-boringssl" class="headerlink" title="编译 boringssl"></a>编译 boringssl</h2><h3 id="Debian-Ubuntu"><a href="#Debian-Ubuntu" class="headerlink" title="Debian&#x2F;Ubuntu"></a>Debian&#x2F;Ubuntu</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --depth=1 https://github.com/google/boringssl.git</span><br><span class="line"><span class="built_in">cd</span> boringssl</span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -GNinja ..</span><br><span class="line">ninja</span><br><span class="line"><span class="built_in">cd</span> ../..</span><br></pre></td></tr></table></figure>
+<h3 id="CentOS-8-Stream-TencentOS-Server-3-1-OpenCloudOS-Server-8"><a href="#CentOS-8-Stream-TencentOS-Server-3-1-OpenCloudOS-Server-8" class="headerlink" title="CentOS 8 Stream&#x2F;TencentOS Server 3.1&#x2F;OpenCloudOS Server 8"></a>CentOS 8 Stream&#x2F;TencentOS Server 3.1&#x2F;OpenCloudOS Server 8</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --depth=1 https://github.com/google/boringssl.git</span><br><span class="line"><span class="built_in">cd</span> boringssl</span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake -DCMAKE_BUILD_TYPE=Release .. </span><br><span class="line">make</span><br><span class="line"><span class="built_in">cd</span> ../..</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装-brotli-压缩"><a href="#安装-brotli-压缩" class="headerlink" title="安装 brotli 压缩"></a>安装 brotli 压缩</h2><blockquote>
+<p>不需要请跳过，并在编译时删除–add-module&#x3D;..&#x2F;ngx_brotli</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules -j8 https://github.com/google/ngx_brotli</span><br><span class="line"><span class="built_in">cd</span> ngx_brotli/deps/brotli</span><br><span class="line"><span class="built_in">mkdir</span> out &amp;&amp; <span class="built_in">cd</span> out</span><br><span class="line">cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS=<span class="string">&quot;-Ofast -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections&quot;</span> -DCMAKE_CXX_FLAGS=<span class="string">&quot;-Ofast -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections&quot;</span> -DCMAKE_INSTALL_PREFIX=./installed ..</span><br><span class="line">cmake --build . --config Release --target brotlienc</span><br><span class="line"><span class="built_in">cd</span> ../../../..</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译安装quic"><a href="#编译安装quic" class="headerlink" title="编译安装quic"></a>编译安装quic</h2><blockquote>
+<p>注意：<br>本人是直接在 &#x2F;root 目录下编译的，如果你在其他目录下，请自行修改路径；<br>如果你不需要 brotli 压缩，请删除–add-module&#x3D;&#x2F;root&#x2F;ngx_brotli<br>本人将 Nginx 安装在 &#x2F;www&#x2F;server&#x2F;nginx 目录下，如果你需要修改，请自行修改路径；</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hg <span class="built_in">clone</span> https://hg.nginx.org/nginx</span><br><span class="line"><span class="built_in">cd</span> nginx</span><br><span class="line">./auto/configure --user=www-data --group=www-data --prefix=/www/server/nginx --with-pcre  --add-module=../ngx_brotli --with-http_v2_module --with-stream --with-stream_ssl_module --with-http_ssl_module --with-http_gzip_static_module --with-http_gunzip_module --with-http_sub_module --with-http_flv_module --with-http_addition_module --with-http_realip_module --with-http_mp4_module --with-ld-opt=-Wl,-E --with-cc-opt=-Wno-error --with-ld-opt=-ljemalloc --with-http_dav_module --with-http_v3_module  --with-cc=c++ --with-cc-opt=<span class="string">&quot;-I../boringssl/include -x c&quot;</span> --with-ld-opt=<span class="string">&quot;-L../boringssl/build/ssl -L../boringssl/build/crypto&quot;</span></span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h2 id="添加-www-用户"><a href="#添加-www-用户" class="headerlink" title="添加 www 用户"></a>添加 www 用户</h2><div class="note warning flat"><p>大部分系统下默认存在着<code>www-data</code>用户组和<code>www-data</code>用户，如果没有请执行以下命令添加。</p>
+</div>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">groupadd www-data</span><br><span class="line">useradd -g www-data -s /sbin/nologin www-data</span><br></pre></td></tr></table></figure>
+<h2 id="添加进程管理"><a href="#添加进程管理" class="headerlink" title="添加进程管理"></a>添加进程管理</h2><blockquote>
+<p>本人使用的是 systemd，如果你使用的是其他进程管理，请自行修改</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/lib/systemd/system/nginx.service</span><br></pre></td></tr></table></figure>
+<p>输入如下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=nginx</span><br><span class="line">After=network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=forking</span><br><span class="line">ExecStart=/www/server/nginx/sbin/nginx</span><br><span class="line">ExecReload=/www/server/nginx/sbin/nginx -s reload</span><br><span class="line">ExecStop=/www/server/nginx/sbin/nginx -s quit</span><br><span class="line">PrivateTmp=<span class="literal">true</span></span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start nginx</span><br></pre></td></tr></table></figure>
+
+<h2 id="开机自启"><a href="#开机自启" class="headerlink" title="开机自启"></a>开机自启</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>示例配置文件如下，更多特性请参考官方文档：<a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_v3_module.html">https://nginx.org/en/docs/http/ngx_http_v3_module.html</a></p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">       <span class="attribute">listen</span> <span class="number">443</span> ssl;</span><br><span class="line">       <span class="attribute">listen</span> [::]:<span class="number">443</span> ssl;</span><br><span class="line"></span><br><span class="line">       <span class="comment"># 用于支持Quic或HTTP/3</span></span><br><span class="line">       <span class="attribute">listen</span> <span class="number">443</span> quic reuseport;</span><br><span class="line">       <span class="attribute">listen</span> [::]:<span class="number">443</span> quic reuseport;</span><br><span class="line"></span><br><span class="line">       <span class="comment"># 用以支持HTTP/2</span></span><br><span class="line">       <span class="attribute">http2</span> <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line">       <span class="attribute">server_name</span> r2wind.cn;</span><br><span class="line"></span><br><span class="line">       <span class="comment"># Quic或HTTP/3响应头</span></span><br><span class="line">       <span class="attribute">add_header</span> Alt-Svc <span class="string">&#x27;h3=&quot;:443&quot;; ma=86400&#x27;</span>;</span><br><span class="line">       <span class="comment"># HSTS</span></span><br><span class="line">       <span class="attribute">add_header</span> Strict-Transport-Security <span class="string">&quot;max-age=63072000; includeSubdomains; preload&quot;</span>;</span><br><span class="line"></span><br><span class="line">       <span class="section">location</span> / &#123;</span><br><span class="line">           <span class="attribute">root</span> /www/wwwroot/r2wind.cn; </span><br><span class="line">           <span class="attribute">index</span>  index.html index.htm;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment"># 证书配置</span></span><br><span class="line">       <span class="attribute">ssl_certificate</span> /root/.acme.sh/smb.wiki/fullchain.cer; </span><br><span class="line">       <span class="attribute">ssl_certificate_key</span> /root/.acme.sh/smb.wiki/smb.wiki.key;</span><br><span class="line">       <span class="attribute">ssl_session_timeout</span> <span class="number">5m</span>;</span><br><span class="line">       <span class="attribute">ssl_protocols</span> TLSv1.<span class="number">2</span> TLSv1.<span class="number">3</span>; </span><br><span class="line">       <span class="attribute">ssl_ciphers</span> ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE; </span><br><span class="line">       <span class="attribute">ssl_prefer_server_ciphers</span> <span class="literal">on</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>配置完成后，重载 Nginx 即可生效</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl reload nginx</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20230526.html">https://r2wind.cn/articles/20230526.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%BB%BA%E7%AB%99/">建站</a><a class="post-meta__tags" href="/tags/Nginx/">Nginx</a></div><div class="post_share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202305/dandelion-445228_1920.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/articles/20230612.html" title="记一次使用 fontTools 优化网页字体（字体文件大小）"><img class="cover" src="https://resources.r2wind.cn/img/202306/animal-8050742_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">记一次使用 fontTools 优化网页字体（字体文件大小）</div></div></a></div><div class="next-post pull-right"><a href="/articles/20230508.html" title="利用 Nginx 搭建 IP 查询接口"><img class="cover" src="https://resources.r2wind.cn/img/202305/nature-7602212_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">利用 Nginx 搭建 IP 查询接口</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/articles/20230508.html" title="利用 Nginx 搭建 IP 查询接口"><img class="cover" src="https://resources.r2wind.cn/img/202305/nature-7602212_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-08</div><div class="title">利用 Nginx 搭建 IP 查询接口</div></div></a></div><div><a href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3"><img class="cover" src="https://resources.r2wind.cn/img/202403/boat-8614314_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-07</div><div class="title">使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3</div></div></a></div><div><a href="/articles/20230612.html" title="记一次使用 fontTools 优化网页字体（字体文件大小）"><img class="cover" src="https://resources.r2wind.cn/img/202306/animal-8050742_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-12</div><div class="title">记一次使用 fontTools 优化网页字体（字体文件大小）</div></div></a></div><div><a href="/articles/20211114.html" title="如何搭建一个属于自己的网站（超详细）"><img class="cover" src="https://resources.r2wind.cn/img/road-238458_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-11-14</div><div class="title">如何搭建一个属于自己的网站（超详细）</div></div></a></div><div><a href="/articles/20211214.html" title="如何使用腾讯云COS+CDN搭建一个属于自己的图床"><img class="cover" src="https://resources.r2wind.cn/img/sky-6852497_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="title">如何使用腾讯云COS+CDN搭建一个属于自己的图床</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">小泽</div><div class="author-info__description">一个自由自在的互联网民工</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">49</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="toc-number">1.</span> <span class="toc-text">安装依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Go"><span class="toc-number">2.</span> <span class="toc-text">安装Go</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E8%A7%A3%E5%8E%8B"><span class="toc-number">2.1.</span> <span class="toc-text">下载并解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">2.2.</span> <span class="toc-text">添加环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F"><span class="toc-number">2.3.</span> <span class="toc-text">验证是否安装成功</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%80%83%E8%99%91%E5%9B%BD%E5%86%85%E7%94%A8%E6%88%B7%E8%AE%BF%E9%97%AE%E5%AE%98%E6%96%B9%E8%BE%83%E6%85%A2%EF%BC%8C%E6%95%85%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">考虑国内用户访问官方较慢，故设置代理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91-boringssl"><span class="toc-number">3.</span> <span class="toc-text">编译 boringssl</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Debian-Ubuntu"><span class="toc-number">3.1.</span> <span class="toc-text">Debian&#x2F;Ubuntu</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CentOS-8-Stream-TencentOS-Server-3-1-OpenCloudOS-Server-8"><span class="toc-number">3.2.</span> <span class="toc-text">CentOS 8 Stream&#x2F;TencentOS Server 3.1&#x2F;OpenCloudOS Server 8</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-brotli-%E5%8E%8B%E7%BC%A9"><span class="toc-number">4.</span> <span class="toc-text">安装 brotli 压缩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85quic"><span class="toc-number">5.</span> <span class="toc-text">编译安装quic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0-www-%E7%94%A8%E6%88%B7"><span class="toc-number">6.</span> <span class="toc-text">添加 www 用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-number">7.</span> <span class="toc-text">添加进程管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8"><span class="toc-number">8.</span> <span class="toc-text">启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="toc-number">9.</span> <span class="toc-text">开机自启</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">10.</span> <span class="toc-text">配置文件</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202403/boat-8614314_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3">使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2024-03-07T00:06:30.000Z" title="发表于 2024-03-07 08:06:30">2024-03-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240227.html" title="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口"><img src="https://resources.r2wind.cn/img/202402/desert-8592629_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口"/></a><div class="content"><a class="title" href="/articles/20240227.html" title="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口">利用腾讯云轻量应用服务器搭建 WHOIS 查询接口</a><time datetime="2024-02-27T11:08:00.000Z" title="发表于 2024-02-27 19:08:00">2024-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240109.html" title="什么是 CNAME 展平？"><img src="https://resources.r2wind.cn/img/202401/fields-8489339_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是 CNAME 展平？"/></a><div class="content"><a class="title" href="/articles/20240109.html" title="什么是 CNAME 展平？">什么是 CNAME 展平？</a><time datetime="2024-01-09T10:21:49.000Z" title="发表于 2024-01-09 18:21:49">2024-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20231127.html" title="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务"><img src="https://resources.r2wind.cn/img/202311/sunset-8401670_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务"/></a><div class="content"><a class="title" href="/articles/20231127.html" title="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务">BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务</a><time datetime="2023-11-27T09:10:54.000Z" title="发表于 2023-11-27 17:10:54">2023-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）"><img src="https://resources.r2wind.cn/img/202309/storm-8244663_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）"/></a><div class="content"><a class="title" href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）">使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 / 腾讯云（DNSPod）API 密钥版本）</a><time datetime="2023-09-14T11:12:50.000Z" title="发表于 2023-09-14 19:12:50">2023-09-14</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://resources.r2wind.cn/background.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2024 By 小泽</div><div class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://mirrors.r2wind.cn/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = (ele) => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    Array.from(ele).forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = '%%{init:{ \'theme\':\'' + theme + '\'}}%%\n'
+      const mermaidID = 'mermaid-' + index
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+
+      const renderV10 = () => {
+        renderFn.then(({svg}) => {
+          mermaidSrc.insertAdjacentHTML('afterend', svg)
+        })
+      }
+
+      const renderV9 = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      typeof renderFn === 'string' ? renderV9(renderFn) : renderV10()
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+    
+    codeMermaidEle.forEach(ele => {
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.innerHTML = `<pre class="mermaid-src" hidden>${ele.textContent}</pre>`
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (false) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+  
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>
