@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？ | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="你知道在腾讯云（DNSPod）如何批量进行域名的批量注册、批量转入、批量续费、批量DNS修改、批量修改域名信息、批量开启或关闭禁止转移锁、批量开启或关闭禁止更新锁嘛？本文较长，请在右侧目录单击内容标题直接跳转PS：如您在操作中存在任何问题可以通过提交工单解决  下列操作均需在腾讯云域名注册控制台批量操作页面（传送门）进行操作。 批量域名注册 通常来讲若无必要的话不建议在此处批量注册域名，比较腾讯">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？">
+<meta property="og:url" content="https://r2wind.cn/articles/20210704.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="你知道在腾讯云（DNSPod）如何批量进行域名的批量注册、批量转入、批量续费、批量DNS修改、批量修改域名信息、批量开启或关闭禁止转移锁、批量开启或关闭禁止更新锁嘛？本文较长，请在右侧目录单击内容标题直接跳转PS：如您在操作中存在任何问题可以通过提交工单解决  下列操作均需在腾讯云域名注册控制台批量操作页面（传送门）进行操作。 批量域名注册 通常来讲若无必要的话不建议在此处批量注册域名，比较腾讯">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/mountains-6277391_1280.jpg">
+<meta property="article:published_time" content="2021-07-04T11:16:55.000Z">
+<meta property="article:modified_time" content="2021-07-04T11:16:55.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="DNSPod">
+<meta property="article:tag" content="腾讯云">
+<meta property="article:tag" content="域名">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/mountains-6277391_1280.jpg"><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20210704.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-71N712DFV3"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-71N712DFV3')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-71N712DFV3', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-07-04 19:16:55'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">50</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">36</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a><a class="nav-page-title" href="/"><span class="site-name">在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-07-04T11:16:55.000Z" title="发表于 2021-07-04 19:16:55">2021-07-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-07-04T11:16:55.000Z" title="更新于 2021-07-04 19:16:55">2021-07-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><blockquote>
+<p>你知道在腾讯云（DNSPod）如何批量进行域名的批量注册、批量转入、批量续费、批量DNS修改、批量修改域名信息、批量开启或关闭禁止转移锁、批量开启或关闭禁止更新锁嘛？<br>本文较长，请在右侧目录单击内容标题直接跳转<br>PS：如您在操作中存在任何问题可以通过<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/workorder">提交工单</a>解决</p>
+</blockquote>
+<p>下列操作均需在腾讯云域名注册控制台批量操作页面（<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/domain/batch">传送门</a>）进行操作。</p>
+<h2 id="批量域名注册"><a href="#批量域名注册" class="headerlink" title="批量域名注册"></a>批量域名注册</h2><blockquote>
+<p>通常来讲若无必要的话不建议在此处批量注册域名，比较腾讯云域名注册活动那么多，在这里注册并不划算。</p>
+</blockquote>
+<h3 id="首先在批量操作页面点击域名注册（进入批量操作页面一般为域名注册界面，通常无需点击）"><a href="#首先在批量操作页面点击域名注册（进入批量操作页面一般为域名注册界面，通常无需点击）" class="headerlink" title="首先在批量操作页面点击域名注册（进入批量操作页面一般为域名注册界面，通常无需点击）"></a>首先在批量操作页面点击域名注册（进入批量操作页面一般为域名注册界面，通常无需点击）</h3><p><img src="https://resources.r2wind.cn/img/20210704132426.png" alt="img"></p>
+<h3 id="输入域名"><a href="#输入域名" class="headerlink" title="输入域名"></a>输入域名</h3><p><img src="https://resources.r2wind.cn/img/20210704133344.png" alt="img"><br>腾讯云提供两种输入方式：输入域名和上传文件<br>输入域名：通过在文本框中手动输入或粘贴的方式进行域名的输入，单次操作最多输入200个<br>上传文件：通过上传文件的方式进行域名的输入，单次上传最多支持4000个域名<br><img src="https://resources.r2wind.cn/img/20210704134341.png" alt="img"></p>
+<blockquote>
+<p>注意事项：<br>仅支持 <strong>txt&#x2F;xls&#x2F;xlsx</strong> 格式的文件。<br>上传的文件大小不得超过2M，超过文件大小将无法进行上传。<br>可以通过单击【下载模板】，查看文件模板填写格式。</p>
+</blockquote>
+<h3 id="选择统一注册年限"><a href="#选择统一注册年限" class="headerlink" title="选择统一注册年限"></a>选择统一注册年限</h3><p>腾讯云提供1-10年的域名注册年限，可按需选择</p>
+<h3 id="选择域名信息模版"><a href="#选择域名信息模版" class="headerlink" title="选择域名信息模版"></a>选择域名信息模版</h3><p>可以选择已有的模板也可以选择新建信息模板</p>
+<h3 id="选择支付方式"><a href="#选择支付方式" class="headerlink" title="选择支付方式"></a>选择支付方式</h3><p>腾讯云提供以下三种支付方式，分别为：<br>使用账户余额：提交后直接从您的账户余额扣除费用，快速完成注册，无需二次确认，不支持使用代金券<br>手动在线支付：提交后将自动创建订单，您需要在订单列表中逐一手动完成支付，支持使用代金券<br>域名特惠包：择使⽤域名特惠包，仅满⾜消耗条件的域名才可提交注册，不⽀持使⽤代⾦券。提交后⽆需再次⽀付，将快速完成注册（目前域名特惠包处于无货状态）</p>
+<h3 id="点击下一步确认相关信息并完成注册"><a href="#点击下一步确认相关信息并完成注册" class="headerlink" title="点击下一步确认相关信息并完成注册"></a>点击下一步确认相关信息并完成注册</h3><h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><blockquote>
+<p>域名为注册型商品，域名注册一旦提交并最终注册成功，不支持退货、退款，请您确认清楚后提交。<br>域名新注价格，请以<a target="_blank" rel="noopener" href="https://buy.cloud.tencent.com/domain?price=1">域名价格页</a>当前显示价格为准，请确认价格后再进行注册。<br>如选择使用账户余额，将在提交注册后依次尝试注册，一旦注册成功则直接扣除账户余额，请确保<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/expense/overview">账户余额</a>充足。<br>如选择手动在线支付，请提交后在<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/expense/deal">订单列表</a>查看并及时完成支付，最终注册成功之前将有可能被他人抢注。<br>如提交的域名列表中，部分域名无法完成注册，剩余域名将继续尝试注册。<br>本功能仅提供普通域名注册，暂不支持溢价词、保留词等特殊域名注册。<br>域名注册任务提交后，腾讯云将依次向注册局提交注册申请。提交成功不代表域名注册成功，腾讯云不承诺域名最终注册成功，是否注册成功请以最终注册结果为准。</p>
+</blockquote>
+<h2 id="批量域名转入"><a href="#批量域名转入" class="headerlink" title="批量域名转入"></a>批量域名转入</h2><h3 id="首先在批量操作页面点击域名转入"><a href="#首先在批量操作页面点击域名转入" class="headerlink" title="首先在批量操作页面点击域名转入"></a>首先在批量操作页面点击域名转入</h3><p><img src="https://resources.r2wind.cn/img/20210704174119.png" alt="img"></p>
+<h3 id="输入域名-1"><a href="#输入域名-1" class="headerlink" title="输入域名"></a>输入域名</h3><p><img src="https://resources.r2wind.cn/img/20210704180354.png" alt="img"><br>腾讯云提供两种输入方式：输入域名和上传文件<br>输入域名：通过在文本框中手动输入或粘贴的方式进行域名和转移密码的输入，单次操作最多输入200个<br>上传文件：通过上传文件的方式进行域名和转移密码的输入，单次上传最多支持4000个域名<br><img src="https://resources.r2wind.cn/img/20210704180518.png" alt="img"></p>
+<h3 id="选择域名信息模版-1"><a href="#选择域名信息模版-1" class="headerlink" title="选择域名信息模版"></a>选择域名信息模版</h3><p>可以选择已有的模板也可以选择新建信息模板</p>
+<blockquote>
+<p>注意：<br>必须已通过实名认证的信息模版才可使用,腾讯云新建模板审核一般情况下需要1个工作日内完成审核，部分可能需要等待3 - 7个工作日。</p>
+</blockquote>
+<h3 id="状态设置"><a href="#状态设置" class="headerlink" title="状态设置"></a>状态设置</h3><p>在 “状态设置” 栏，请根据您的实际需求勾选以下选项：<br><img src="https://resources.r2wind.cn/img/20210704180936.png" alt="img"></p>
+<blockquote>
+<p>注意：<br>根据国际互联网域名与地址管理机构（ICANN）的 转让政策规定，修改域名信息后60天内，禁止将域名从当前接入商转出。<br>如您需将域名转出腾讯云，请您在转入域名时，勾选【关闭 “60天内禁止转移注册商锁定”】，否则转入域名后60天内不能转出。<br>PS:一般来讲应该不会刚转入就想转出吧~</p>
+</blockquote>
+<h3 id="选择支付方式并完成操作"><a href="#选择支付方式并完成操作" class="headerlink" title="选择支付方式并完成操作"></a>选择支付方式并完成操作</h3><blockquote>
+<p>腾讯云提供以下两种支付方式，分别为：<br>使用账户余额：提交后直接从您的账户余额扣除费用，快速完成注册，无需二次确认，不支持使用代金券<br>手动在线支付：提交后将自动创建订单，您需要在订单列表中逐一手动完成支付，支持使用代金券<br>选择支付方式并勾选 “我已阅读并同意《腾讯云域名注册协议》和《腾讯云隐私声明》”后单击下一步，确认相关信息并完成操作<br><img src="https://resources.r2wind.cn/img/20210704181457.png" alt="img"></p>
+</blockquote>
+<h3 id="查看操作日志"><a href="#查看操作日志" class="headerlink" title="查看操作日志"></a>查看操作日志</h3><p>在【批量操作】管理页面，选择【操作日志】页签。<br>选择【操作任务】，并单击【查看详情】，即可查看您的域名转入操作结果。。</p>
+<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><blockquote>
+<p>域名转入时必须选择已实名认证的域名信息模板。<br>域名转入一般需要 5~7 个工作日，具体取决于注册局审核时间。请提交后耐心等待，并留意域名列表。<br>如选择使用账户余额，将在提交后依次执行域名转入，一旦转入成功则直接扣除账户余额，请确保<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/expense/overview">账户余额</a>充足。<br>如选择手动在线支付，请提交后在<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/expense/deal">订单列表</a>查看并及时完成支付，避免影响转入。<br>如域名有效期已达 10 年（最长期限），则转入时仍需扣除费用但不增加年限。域名续费不足 45 天时不建议转入，否则可能导致年限减少。<br>提交成功不代表域名转入成功，是否转入成功请以最终执行结果为准。域名一旦转入成功，不支持撤销、退款。<br>当前域名转入仅支持非溢价词转入，为您带来的不便敬请谅解。</p>
+</blockquote>
+<h2 id="批量域名续费"><a href="#批量域名续费" class="headerlink" title="批量域名续费"></a>批量域名续费</h2><h3 id="首先在批量操作页面点击域名续费"><a href="#首先在批量操作页面点击域名续费" class="headerlink" title="首先在批量操作页面点击域名续费"></a>首先在批量操作页面点击域名续费</h3><p><img src="https://resources.r2wind.cn/img/20210704182207.png" alt="img"></p>
+<h3 id="输入域名-2"><a href="#输入域名-2" class="headerlink" title="输入域名"></a>输入域名</h3><p><img src="https://resources.r2wind.cn/img/20210704133344.png" alt="img"><br>腾讯云提供两种输入方式：输入域名和上传文件<br>输入域名：通过在文本框中手动输入或粘贴的方式进行域名的输入，单次操作最多输入200个<br>上传文件：通过上传文件的方式进行域名的输入，单次上传最多支持4000个域名</p>
+<h3 id="选择统一注册年限-1"><a href="#选择统一注册年限-1" class="headerlink" title="选择统一注册年限"></a>选择统一注册年限</h3><p>腾讯云提供1-9年的域名续费年限，可按需选择，域名有效期最长不超过10年</p>
+<h3 id="选择支付方式并完成操作-1"><a href="#选择支付方式并完成操作-1" class="headerlink" title="选择支付方式并完成操作"></a>选择支付方式并完成操作</h3><blockquote>
+<p>腾讯云提供以下两种支付方式，分别为：<br>使用账户余额：提交后直接从您的账户余额扣除费用，快速完成注册，无需二次确认，不支持使用代金券<br>手动在线支付：提交后将自动创建订单，您需要在订单列表中逐一手动完成支付，支持使用代金券<br><img src="https://resources.r2wind.cn/img/20210704183216.png" alt="img"></p>
+</blockquote>
+<h3 id="注意事项：-1"><a href="#注意事项：-1" class="headerlink" title="注意事项："></a>注意事项：</h3><blockquote>
+<p>如选择使用账户余额，将在提交后依次执行域名续费，一旦续费成功则直接扣除账户余额，请确保账户余额充足。<br>如选择手动在线支付，请提交后在订单列表查看并及时完成支付。<br>本页面仅根据普通域名续费价格预估，白金域名存在价格波动情况，请以最终结算价格为准，如介意请勿提交。<br>提交成功不代表域名续费成功，是否续费成功请以最终执行结果为准。域名一旦续费成功，不支持撤销、退款。<br>域名最长有效期不可超过 10 年。<br>域名续费实际价格请以最终订单结算价格为准。</p>
+</blockquote>
+<h2 id="批量DNS修改"><a href="#批量DNS修改" class="headerlink" title="批量DNS修改"></a>批量DNS修改</h2><h3 id="首先在批量操作页面点击DNS修改"><a href="#首先在批量操作页面点击DNS修改" class="headerlink" title="首先在批量操作页面点击DNS修改"></a>首先在批量操作页面点击DNS修改</h3><p><img src="https://resources.r2wind.cn/img/20210704183517.png" alt="img"></p>
+<h3 id="输入域名-3"><a href="#输入域名-3" class="headerlink" title="输入域名"></a>输入域名</h3><p><img src="https://resources.r2wind.cn/img/20210704133344.png" alt="img"><br>腾讯云提供两种输入方式：输入域名和上传文件<br>输入域名：通过在文本框中手动输入或粘贴的方式输入需要修改DNS的域名，单次操作最多输入200个<br>上传文件：通过上传文件的方式进行域名的输入，单次上传最多支持4000个域名</p>
+<h3 id="选择或输入DNS服务器"><a href="#选择或输入DNS服务器" class="headerlink" title="选择或输入DNS服务器"></a>选择或输入DNS服务器</h3><p>修改 DNS 服务器可以选择两种方式进行操作，分别是<strong>使用 DNSPod （推荐）</strong>和<strong>自定义 DNS</strong>：<br><strong>选择使用 DNSPod （推荐）</strong>：自动为域名匹配当前套餐的 DNSPod 服务器的 DNS 地址。</p>
+<blockquote>
+<p>选择使用 DNSPod 会匹配当前解析所属套餐的 DNS 地址。</p>
+</blockquote>
+<p><strong>选择自定义 DNS</strong>：填写您需要为域名设置的 DNS 服务器地址。</p>
+<blockquote>
+<p>需要在腾讯云进行解析的域名，修改 DNS 服务器地址请参考 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/302/7806#.E6.AD.A5.E9.AA.A43.EF.BC.9A.E4.BF.AE.E6.94.B9-dns-.E6.9C.8D.E5.8A.A1.E5.99.A8">修改 DNS 服务器</a>。<br>自定义的 DNS 服务器域名不能是私建的 DNS 服务器域名，必须是解析商的权威 DNS 服务器域名。</p>
+</blockquote>
+<h3 id="查看操作日志-1"><a href="#查看操作日志-1" class="headerlink" title="查看操作日志"></a>查看操作日志</h3><p>在【批量操作】管理页面，选择【操作日志】页签。<br>选择【操作任务】&gt;【DNS 修改】，并单击【查看详情】，即可查看您的域名 DNS 修改结果。</p>
+<h3 id="注意事项：-2"><a href="#注意事项：-2" class="headerlink" title="注意事项："></a>注意事项：</h3><blockquote>
+<p>修改 DNS 服务器，表示更换其他 DNS 服务器负责当前域名的解析服务。修改错误可能影响当前域名正常解析，请谨慎操作。<br>如选择使用 DNSPod 服务器，请确保您已在 DNSPod 添加相关域名解析，否则可能导致域名无法正常解析。<br>如选择使用 DNSPod 服务器，系统将分别为各个域名匹配当前最佳服务器地址，如无法识别则使用免费版。是否符合预期，请自行确认。<br>任务提交后系统将开始执行，因域名状态各异，可能存在部分域名修改失败。是否修改成功，请以执行结果为准。<br>DNS 服务器地址修改成功后，因各地运营商 DNS 缓存机制不同，最长需要 72 小时的全球生效时间，请您耐心等待。</p>
+</blockquote>
+<h2 id="批量域名信息修改"><a href="#批量域名信息修改" class="headerlink" title="批量域名信息修改"></a>批量域名信息修改</h2><h3 id="首先在批量操作页面点击域名信息修改"><a href="#首先在批量操作页面点击域名信息修改" class="headerlink" title="首先在批量操作页面点击域名信息修改"></a>首先在批量操作页面点击域名信息修改</h3><p><img src="https://resources.r2wind.cn/img/20210704185052.png" alt="img"></p>
+<h3 id="输入域名-4"><a href="#输入域名-4" class="headerlink" title="输入域名"></a>输入域名</h3><p><img src="https://resources.r2wind.cn/img/20210704133344.png" alt="img"><br>腾讯云提供两种输入方式：输入域名和上传文件<br>输入域名：通过在文本框中手动输入或粘贴的方式进行域名的输入，单次操作最多输入200个<br>上传文件：通过上传文件的方式进行域名的输入，单次上传最多支持4000个域名</p>
+<h3 id="选择域名信息模版-2"><a href="#选择域名信息模版-2" class="headerlink" title="选择域名信息模版"></a>选择域名信息模版</h3><p>可以选择已有的模板也可以选择新建信息模板</p>
+<blockquote>
+<p>注意：<br>必须已通过实名认证的信息模版才可使用,腾讯云新建模板审核一般情况下需要1个工作日内完成审核，部分可能需要等待3 - 7个工作日。</p>
+</blockquote>
+<h3 id="勾选同意协议并完成操作"><a href="#勾选同意协议并完成操作" class="headerlink" title="勾选同意协议并完成操作"></a>勾选同意协议并完成操作</h3><p>在 “状态设置” 栏，您可以实际情况勾选【关闭 “60天内禁止转移注册商锁定”】，并勾选 “我已阅读并同意《腾讯云域名注册协议》和《腾讯云隐私声明》”后单击下一步,确认相关信息并完成操作<br><img src="https://resources.r2wind.cn/img/20210704185639.png" alt="img"></p>
+<h3 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h3><blockquote>
+<p>域名信息修改必须选择已实名认证的域名信息模板。<br>域名信息修改审核时间一般需要 3~7 个工作日，具体取决于相关注册局审核时间。请提交后耐心等待，并留意域名状态。<br>根据 ICANN 相关政策要求，域名所有者的电子邮箱地址必须确保真实有效。请您确保所选择的域名信息模板资料填写正确。<br>域名信息修改审核期间不影响该域名的正常使用及 DNS 解析，域名信息审核结果将通过邮件通知，请您留意。<br>任务提交成功后，系统将依次执行操作，操作完成后需要等待注册局审核，是否修改成功请以审核结果为准。</p>
+</blockquote>
+<h2 id="批量设置禁止转移锁或禁止更新锁-账号间转移"><a href="#批量设置禁止转移锁或禁止更新锁-账号间转移" class="headerlink" title="批量设置禁止转移锁或禁止更新锁&amp;账号间转移"></a>批量设置禁止转移锁或禁止更新锁&amp;账号间转移</h2><blockquote>
+<p>由于过程过于简单，在这里不再过多赘述，若有疑问请参考官方文档<br>禁止更新锁：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/242/46467">传送门</a><br>禁止转移锁：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/242/46468">传送门</a><br>账号间转移：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/242/46461">传送门</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20210704.html">https://r2wind.cn/articles/20210704.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DNSPod/">DNSPod</a><a class="post-meta__tags" href="/tags/%E8%85%BE%E8%AE%AF%E4%BA%91/">腾讯云</a><a class="post-meta__tags" href="/tags/%E5%9F%9F%E5%90%8D/">域名</a></div><div class="post-share"><div class="social-share" data-image="https://resources.r2wind.cn/img/mountains-6277391_1280.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="prev-post pull-left" href="/articles/20210803.html" title="如何将在腾讯企业邮箱在线购买/赠送的域名过户到腾讯云并在腾讯云进行解析？"><img class="cover" src="https://resources.r2wind.cn/img/lake-5173683_1280.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">如何将在腾讯企业邮箱在线购买/赠送的域名过户到腾讯云并在腾讯云进行解析？</div></div></a><a class="next-post pull-right" href="/articles/20210617.html" title="DNSPod出品的DoH客户端，一键为电脑打开DoH服务"><img class="cover" src="https://resources.r2wind.cn/img/sunset-404072_1280.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">DNSPod出品的DoH客户端，一键为电脑打开DoH服务</div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a href="/articles/20211030.html" title="在DNSPod解析的域名如何设置DDNS(动态域名解析)"><img class="cover" src="https://resources.r2wind.cn/img/sea-164989_1280.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-30</div><div class="title">在DNSPod解析的域名如何设置DDNS(动态域名解析)</div></div></a><a href="/articles/20230108.html" title="使用 DNSPod 拉平 CNAME 记录（CDN 场景）"><img class="cover" src="https://resources.r2wind.cn/img/202301/clouds-7689828_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-08</div><div class="title">使用 DNSPod 拉平 CNAME 记录（CDN 场景）</div></div></a><a href="/articles/20210809.html" title="DNS解析出现问题怎么办？"><img class="cover" src="https://resources.r2wind.cn/img/mountain-6320288_1280.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-10</div><div class="title">DNS解析出现问题怎么办？</div></div></a><a href="/articles/20220522.html" title="DNS+IGTM实现访问流量智能调度"><img class="cover" src="https://resources.r2wind.cn/img/202205/seascape-4636549_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-22</div><div class="title">DNS+IGTM实现访问流量智能调度</div></div></a><a href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 &#x2F; 腾讯云（DNSPod）API 密钥版本）"><img class="cover" src="https://resources.r2wind.cn/img/202309/storm-8244663_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-14</div><div class="title">使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 &#x2F; 腾讯云（DNSPod）API 密钥版本）</div></div></a><a href="/articles/20221020.html" title="如何正确变更 DNSPod 解析套餐（降级场景）"><img class="cover" src="https://resources.r2wind.cn/img/202210/bridge-7504605_1920.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-20</div><div class="title">如何正确变更 DNSPod 解析套餐（降级场景）</div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info is-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">50</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">36</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E5%9F%9F%E5%90%8D%E6%B3%A8%E5%86%8C"><span class="toc-number">1.</span> <span class="toc-text">批量域名注册</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E5%9C%A8%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E5%9F%9F%E5%90%8D%E6%B3%A8%E5%86%8C%EF%BC%88%E8%BF%9B%E5%85%A5%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2%E4%B8%80%E8%88%AC%E4%B8%BA%E5%9F%9F%E5%90%8D%E6%B3%A8%E5%86%8C%E7%95%8C%E9%9D%A2%EF%BC%8C%E9%80%9A%E5%B8%B8%E6%97%A0%E9%9C%80%E7%82%B9%E5%87%BB%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">首先在批量操作页面点击域名注册（进入批量操作页面一般为域名注册界面，通常无需点击）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%9F%9F%E5%90%8D"><span class="toc-number">1.2.</span> <span class="toc-text">输入域名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E7%BB%9F%E4%B8%80%E6%B3%A8%E5%86%8C%E5%B9%B4%E9%99%90"><span class="toc-number">1.3.</span> <span class="toc-text">选择统一注册年限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E5%9F%9F%E5%90%8D%E4%BF%A1%E6%81%AF%E6%A8%A1%E7%89%88"><span class="toc-number">1.4.</span> <span class="toc-text">选择域名信息模版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%94%AF%E4%BB%98%E6%96%B9%E5%BC%8F"><span class="toc-number">1.5.</span> <span class="toc-text">选择支付方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%B9%E5%87%BB%E4%B8%8B%E4%B8%80%E6%AD%A5%E7%A1%AE%E8%AE%A4%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF%E5%B9%B6%E5%AE%8C%E6%88%90%E6%B3%A8%E5%86%8C"><span class="toc-number">1.6.</span> <span class="toc-text">点击下一步确认相关信息并完成注册</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.7.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E5%9F%9F%E5%90%8D%E8%BD%AC%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">批量域名转入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E5%9C%A8%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E5%9F%9F%E5%90%8D%E8%BD%AC%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">首先在批量操作页面点击域名转入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%9F%9F%E5%90%8D-1"><span class="toc-number">2.2.</span> <span class="toc-text">输入域名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E5%9F%9F%E5%90%8D%E4%BF%A1%E6%81%AF%E6%A8%A1%E7%89%88-1"><span class="toc-number">2.3.</span> <span class="toc-text">选择域名信息模版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E8%AE%BE%E7%BD%AE"><span class="toc-number">2.4.</span> <span class="toc-text">状态设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%94%AF%E4%BB%98%E6%96%B9%E5%BC%8F%E5%B9%B6%E5%AE%8C%E6%88%90%E6%93%8D%E4%BD%9C"><span class="toc-number">2.5.</span> <span class="toc-text">选择支付方式并完成操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%93%8D%E4%BD%9C%E6%97%A5%E5%BF%97"><span class="toc-number">2.6.</span> <span class="toc-text">查看操作日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A"><span class="toc-number">2.7.</span> <span class="toc-text">注意事项：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E5%9F%9F%E5%90%8D%E7%BB%AD%E8%B4%B9"><span class="toc-number">3.</span> <span class="toc-text">批量域名续费</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E5%9C%A8%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E5%9F%9F%E5%90%8D%E7%BB%AD%E8%B4%B9"><span class="toc-number">3.1.</span> <span class="toc-text">首先在批量操作页面点击域名续费</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%9F%9F%E5%90%8D-2"><span class="toc-number">3.2.</span> <span class="toc-text">输入域名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E7%BB%9F%E4%B8%80%E6%B3%A8%E5%86%8C%E5%B9%B4%E9%99%90-1"><span class="toc-number">3.3.</span> <span class="toc-text">选择统一注册年限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%94%AF%E4%BB%98%E6%96%B9%E5%BC%8F%E5%B9%B6%E5%AE%8C%E6%88%90%E6%93%8D%E4%BD%9C-1"><span class="toc-number">3.4.</span> <span class="toc-text">选择支付方式并完成操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A-1"><span class="toc-number">3.5.</span> <span class="toc-text">注意事项：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%B9%E9%87%8FDNS%E4%BF%AE%E6%94%B9"><span class="toc-number">4.</span> <span class="toc-text">批量DNS修改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E5%9C%A8%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BBDNS%E4%BF%AE%E6%94%B9"><span class="toc-number">4.1.</span> <span class="toc-text">首先在批量操作页面点击DNS修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%9F%9F%E5%90%8D-3"><span class="toc-number">4.2.</span> <span class="toc-text">输入域名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E6%88%96%E8%BE%93%E5%85%A5DNS%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">4.3.</span> <span class="toc-text">选择或输入DNS服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%93%8D%E4%BD%9C%E6%97%A5%E5%BF%97-1"><span class="toc-number">4.4.</span> <span class="toc-text">查看操作日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A-2"><span class="toc-number">4.5.</span> <span class="toc-text">注意事项：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E5%9F%9F%E5%90%8D%E4%BF%A1%E6%81%AF%E4%BF%AE%E6%94%B9"><span class="toc-number">5.</span> <span class="toc-text">批量域名信息修改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E5%9C%A8%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E5%9F%9F%E5%90%8D%E4%BF%A1%E6%81%AF%E4%BF%AE%E6%94%B9"><span class="toc-number">5.1.</span> <span class="toc-text">首先在批量操作页面点击域名信息修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E5%9F%9F%E5%90%8D-4"><span class="toc-number">5.2.</span> <span class="toc-text">输入域名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E5%9F%9F%E5%90%8D%E4%BF%A1%E6%81%AF%E6%A8%A1%E7%89%88-2"><span class="toc-number">5.3.</span> <span class="toc-text">选择域名信息模版</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8B%BE%E9%80%89%E5%90%8C%E6%84%8F%E5%8D%8F%E8%AE%AE%E5%B9%B6%E5%AE%8C%E6%88%90%E6%93%8D%E4%BD%9C"><span class="toc-number">5.4.</span> <span class="toc-text">勾选同意协议并完成操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-1"><span class="toc-number">5.5.</span> <span class="toc-text">注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E8%AE%BE%E7%BD%AE%E7%A6%81%E6%AD%A2%E8%BD%AC%E7%A7%BB%E9%94%81%E6%88%96%E7%A6%81%E6%AD%A2%E6%9B%B4%E6%96%B0%E9%94%81-%E8%B4%A6%E5%8F%B7%E9%97%B4%E8%BD%AC%E7%A7%BB"><span class="toc-number">6.</span> <span class="toc-text">批量设置禁止转移锁或禁止更新锁&amp;账号间转移</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20241003.html" title="云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站"><img src="https://resources.r2wind.cn/img/202410/20241002161828.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站"/></a><div class="content"><a class="title" href="/articles/20241003.html" title="云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站">云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站</a><time datetime="2024-10-03T09:06:30.000Z" title="发表于 2024-10-03 17:06:30">2024-10-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202403/boat-8614314_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3">使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2024-03-07T00:06:30.000Z" title="发表于 2024-03-07 08:06:30">2024-03-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240227.html" title="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口"><img src="https://resources.r2wind.cn/img/202402/desert-8592629_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口"/></a><div class="content"><a class="title" href="/articles/20240227.html" title="利用腾讯云轻量应用服务器搭建 WHOIS 查询接口">利用腾讯云轻量应用服务器搭建 WHOIS 查询接口</a><time datetime="2024-02-27T11:08:00.000Z" title="发表于 2024-02-27 19:08:00">2024-02-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20240109.html" title="什么是 CNAME 展平？"><img src="https://resources.r2wind.cn/img/202401/fields-8489339_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="什么是 CNAME 展平？"/></a><div class="content"><a class="title" href="/articles/20240109.html" title="什么是 CNAME 展平？">什么是 CNAME 展平？</a><time datetime="2024-01-09T10:21:49.000Z" title="发表于 2024-01-09 18:21:49">2024-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20231127.html" title="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务"><img src="https://resources.r2wind.cn/img/202311/sunset-8401670_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务"/></a><div class="content"><a class="title" href="/articles/20231127.html" title="BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务">BIND 9+CloudNS+NS1 (NSONE) 搭建高可用 DNS 服务</a><time datetime="2023-11-27T09:10:54.000Z" title="发表于 2023-11-27 17:10:54">2023-11-27</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2024 By 小泽</div><div class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>
