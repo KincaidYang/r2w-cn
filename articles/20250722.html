@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？ | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="好久不见！这段时间 AI 圈热闹非凡，各类大模型轮番登场，神仙打架令人眼花缭乱。与此同时，基于大模型的 AI 编程助手也如雨后春笋般涌现。在我“失踪”没更新的大半年里，悄悄从运营转型，体验了一把产品经理的角色，顺带试用了不少 AI 工具。最近听说腾讯推出了一款全球首个支持「产设研一体化」的 AI 全栈工程师——CodeBuddy，我当然第一时间申请了内测资格。今天就来和大家聊聊这款产品的真实使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">
+<meta property="og:url" content="https://r2wind.cn/articles/20250722.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="好久不见！这段时间 AI 圈热闹非凡，各类大模型轮番登场，神仙打架令人眼花缭乱。与此同时，基于大模型的 AI 编程助手也如雨后春笋般涌现。在我“失踪”没更新的大半年里，悄悄从运营转型，体验了一把产品经理的角色，顺带试用了不少 AI 工具。最近听说腾讯推出了一款全球首个支持「产设研一体化」的 AI 全栈工程师——CodeBuddy，我当然第一时间申请了内测资格。今天就来和大家聊聊这款产品的真实使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202507/website.png">
+<meta property="article:published_time" content="2025-07-22T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-22T00:00:00.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="AI编程">
+<meta property="article:tag" content="CodeBuddy">
+<meta property="article:tag" content="开发工具">
+<meta property="article:tag" content="效率工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202507/website.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？",
+  "url": "https://r2wind.cn/articles/20250722.html",
+  "image": "https://resources.r2wind.cn/img/202507/website.png",
+  "datePublished": "2025-07-22T00:00:00.000Z",
+  "dateModified": "2025-07-22T00:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "小泽",
+      "url": "https://r2wind.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20250722.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MG9VW91X52"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MG9VW91X52')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MG9VW91X52', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div class="bg-animation" id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a><a class="nav-page-title" href="/"><span class="site-name">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-22T00:00:00.000Z" title="更新于 2025-07-22 08:00:00">2025-07-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><blockquote>
+<p>好久不见！这段时间 AI 圈热闹非凡，各类大模型轮番登场，神仙打架令人眼花缭乱。与此同时，基于大模型的 AI 编程助手也如雨后春笋般涌现。在我“失踪”没更新的大半年里，悄悄从运营转型，体验了一把产品经理的角色，顺带试用了不少 AI 工具。最近听说腾讯推出了一款全球首个支持「产设研一体化」的 AI 全栈工程师——<strong>CodeBuddy</strong>，我当然第一时间申请了内测资格。今天就来和大家聊聊这款产品的真实使用体验。</p>
+</blockquote>
+<h2 id="01｜AI-编程助手扎堆，CodeBuddy-有何不同？"><a href="#01｜AI-编程助手扎堆，CodeBuddy-有何不同？" class="headerlink" title="01｜AI 编程助手扎堆，CodeBuddy 有何不同？"></a>01｜AI 编程助手扎堆，CodeBuddy 有何不同？</h2><p>过去一年多，AI 编程工具层出不穷：从 GitHub Copilot，到 Cursor、字节的 Trae、阿里的通义灵码，再到腾讯的 CodeBuddy，它们让编码效率实现了前所未有的提升。</p>
+<p>不过说实话，作为非专业程序员，我的体验肯定没有工程师那么深入。但当我得知 CodeBuddy 已从插件形态升级为独立 IDE，并被官方定义为“打破产品、设计与研发壁垒的 AI 全栈高级工程师”时，还是被惊艳到了：这不仅是一个写代码的工具，它还能协助完成产品设计！</p>
+<h2 id="02｜上手-CodeBuddy，产品设计一条龙"><a href="#02｜上手-CodeBuddy，产品设计一条龙" class="headerlink" title="02｜上手 CodeBuddy，产品设计一条龙"></a>02｜上手 CodeBuddy，产品设计一条龙</h2><p>产品与研发之间的壁垒由来已久：产品写不清、研发看不懂、代码写不出，早已是老问题。理论上，只要产品经理能输出详尽的文档（需求说明、功能点、用户故事、流程图、原型图、UI 设计、交互方案、技术选型、开发计划等），问题自然迎刃而解。但对大多数新手产品来说，这堪称“噩梦”。</p>
+<p>CodeBuddy 的出现，似乎提供了一种新的可能。</p>
+<p>我决定偷个懒，直接丢出一个需求测试一下它的能力：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我想做一个 AI 智能客服助手，请你帮我生成产品的需求文档</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-requirement.png" alt="CodeBuddy 产品需求"></p>
+<blockquote>
+<p>✦ 当前我选择的是 Gemini-2.5-Pro 模型，CodeBuddy 支持多种大模型。</p>
+</blockquote>
+<p>短短几秒，一个结构完整、条理清晰的 PRD 就生成了。更让我惊喜的是，它居然直接准备开始画原型图了！</p>
+<h2 id="03｜原型图-高保真界面，CodeBuddy-继续上场"><a href="#03｜原型图-高保真界面，CodeBuddy-继续上场" class="headerlink" title="03｜原型图 + 高保真界面，CodeBuddy 继续上场"></a>03｜原型图 + 高保真界面，CodeBuddy 继续上场</h2><p>接着我又发出指令：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">请你根据 PRD 文档继续生成原型图界面，尽量使用中文</span><br></pre></td></tr></table></figure>
+
+<p>不过我当时的描述不太明确，CodeBuddy 按字面理解给出了“草图级”原型，而我想要的是更高保真的页面。但这也提醒了我：</p>
+<div class="note info flat"><p>和大模型打交道，一定要<strong>说清楚具体需求</strong>，不要让它“自由发挥”。</p>
+</div>
+
+<p>于是我继续明确请求：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">请你根据原型图生成界面，使用 React 框架，使用 TypeScript 语言，并使用 TailwindCSS 样式，生成可交互的高保真原型页面</span><br></pre></td></tr></table></figure>
+
+<p>CodeBuddy 开始写代码，但启动时报错了。不要紧，把报错信息截图发回去，它就会自动分析并修复。</p>
+<p><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-3.png" alt="CodeBuddy Debug"></p>
+<div class="note info flat"><p>启动报错是常有的事，把错误一条条丢回去，它会持续修复，直到跑通。</p>
+</div>
+
+<p>修复完成后，终于见到成果了，多图预警：</p>
+<blockquote>
+<p>登录页、注册页、首页、聊天页、设置页……CodeBuddy 已经帮我构建了一个完整的智能客服原型应用，而且界面居然能交互，按钮是可点的，太惊喜了！</p>
+</blockquote>
+<p><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-6.png" alt="多个页面展示"><br><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-7.png" alt="多个页面展示"><br><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-8.png" alt="多个页面展示"><br><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-9.png" alt="多个页面展示"><br><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-10.png" alt="多个页面展示"><br><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-11.png" alt="多个页面展示"><br><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-prototype-12.png" alt="多个页面展示"></p>
+<h2 id="04｜产研协同：接口文档-任务拆解-开发计划，一站式搞定"><a href="#04｜产研协同：接口文档-任务拆解-开发计划，一站式搞定" class="headerlink" title="04｜产研协同：接口文档 + 任务拆解 + 开发计划，一站式搞定"></a>04｜产研协同：接口文档 + 任务拆解 + 开发计划，一站式搞定</h2><p>继续挑战一下 CodeBuddy 的“全栈能力”：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">请你根据产品文档，生成接口文档 / 任务拆解清单，并生成开发计划</span><br></pre></td></tr></table></figure>
+
+<p>果不其然，CodeBuddy 又交出了一份漂亮的答卷：</p>
+<ul>
+<li>接口文档涵盖接口名、请求方式、参数定义、返回格式、示例代码等；</li>
+<li>任务拆解明确标出各阶段工作；</li>
+<li>还附带了开发时间计划表。</li>
+</ul>
+<p><img src="https://resources.r2wind.cn/img/202507/codebuddy-product-development-1.png" alt="接口文档预览"></p>
+<p>这体验，对于新手 PM 简直是如虎添翼。</p>
+<h2 id="05｜体验总结：不止是-AI-工具，更像是个团队搭子"><a href="#05｜体验总结：不止是-AI-工具，更像是个团队搭子" class="headerlink" title="05｜体验总结：不止是 AI 工具，更像是个团队搭子"></a>05｜体验总结：不止是 AI 工具，更像是个团队搭子</h2><p>本次 CodeBuddy 的初步体验，让我真实感受到 AI 对产品与开发流程的深度渗透。从需求整理、原型搭建，到页面生成、接口设计和开发计划，它几乎完成了一个完整的“产设研”闭环。</p>
+<p>当然，体验过程中也发现了一些小问题，比如：</p>
+<ul>
+<li>有时理解不到位需要补充描述；</li>
+<li>生成代码需要调试和报错反馈；</li>
+<li>界面设计还略有待优化。</li>
+</ul>
+<p>但这并不影响 CodeBuddy 作为一个 <strong>“AI 全栈工程师”</strong> 的强大潜力。</p>
+<p>📦 本次体验生成的所有文档和代码，我已经上传至腾讯 CNB 仓库，感兴趣的朋友可以访问查看：</p>
+<p>👉 <a target="_blank" rel="noopener" href="https://cnb.cool/KincaidYang/ai-customer-service-demo">DEMO 仓库地址</a><br>👉 <a target="_blank" rel="noopener" href="https://www.codebuddy.ai/">CodeBuddy 官网</a><br>👉 <a target="_blank" rel="noopener" href="https://docs.google.com/forms/d/1TMgPGpLdy3G5JmNS0rkicQ3EX1bFcLMY8DeXT_3msPA/edit">内测申请</a></p>
+<h2 id="06｜写在最后：AI-是工具，不是大脑"><a href="#06｜写在最后：AI-是工具，不是大脑" class="headerlink" title="06｜写在最后：AI 是工具，不是大脑"></a>06｜写在最后：AI 是工具，不是大脑</h2><p>CodeBuddy 确实让我感受到效率的飞跃，但我仍想提醒一句：</p>
+<blockquote>
+<p><strong>AI 再强，也是工具，不是大脑。</strong></p>
+</blockquote>
+<p>我们依然需要判断力、理解力与创造力。不要轻易把思考交给 AI，它只是助你一臂之力，而不是代替你工作的大脑。</p>
+<p>未来，AI 可能还会以更惊人的速度前进，产品经理、开发者、设计师，或许都将与 AI 深度共舞。而我们要做的，就是学会与它协作，而不是被它取代。</p>
+<h2 id="00｜-笔者独白"><a href="#00｜-笔者独白" class="headerlink" title="00｜ 笔者独白"></a>00｜ 笔者独白</h2><p>过于依赖 AI ，不知道笔者的文笔是否已经失去了灵魂，每次都觉得自己写的没办法看了已经，总是让 AI 帮我润色，不过就这样吧，或者早晚有一天还是要把这些东西重新捡回来，自己思考，自己写作，自己表达。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20250722.html">https://r2wind.cn/articles/20250722.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CodeBuddy/">CodeBuddy</a><a class="post-meta__tags" href="/tags/AI%E7%BC%96%E7%A8%8B/">AI编程</a><a class="post-meta__tags" href="/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">开发工具</a><a class="post-meta__tags" href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/">效率工具</a></div><div class="post-share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202507/website.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img class="cover" src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</div></div><div class="info-2"><div class="info-item-1"> 之前在 Nginx-Quic 分支被合并到了 Nginx 主线的时候写过一篇使用 BoringSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3 的文章，详见 Nginx 编译开启 Quic 或 HTTP&#x2F;3，随着 Nginx 主线在 2025 年 7 月底（Nginx 1.29.0+）的一个提交中引入了对 OpenSSL QUIC 的适配支持（仅支持OpenSSL 3.5.1 及以上版本），本文将为您介绍如何使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3。  OpenSSL 3.5.1 默认仅在较新的 Linux 发行版中可用，例如 Debian 13，本文以 Debian 13 为例进行演示。如果您使用的是较旧的发行版，可能需要手动编译 OpenSSL 3.5.1 或升级您的操作系统。   安装依赖123# Debian 13apt updateapt install build-essential ca-certificates zlib1g-dev libpcre2-dev tar unzip libs...</div></div></div></a><a class="pagination-related" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img class="cover" src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">使用宝塔面板部署一个属于自己的 DeepSeek</div></div><div class="info-2"><div class="info-item-1"> 各位亲爱的麻瓜朋友们（对，说的就是那个盯着终端界面瑟瑟发抖的你），今天我们要玩一场麻瓜也能轻松通关的魔法仪式——用宝塔面板在本地服务器召唤出那个让代码圈闻风丧胆的”深度摸鱼”神器DeepSeek！想象一下：当别人还在苦哈哈地敲着黑底白字的命令行，把头发薅成地中海时，你已经翘着二郎腿，喝着肥宅快乐水，用鼠标点点点就建好了AI大模型的老巢。这感觉就像别人在徒手造火箭，而你却从四次元口袋掏出了任意门——别怀疑，宝塔面板就是这个次元壁突破器！准备好迎接这场”作弊级”的部署之旅了吗？让我们先把SSH咒语、Docker符箓这些吓人的玩意暂时收进抽屉，毕竟今天我们要用的是连你家喵星人都能看懂的图形化操作。系好安全带，三分钟后，你的服务器就要开始吞吐AI智慧的星光啦！✨   本文将指导你在服务器上使用宝塔面板部署DeepSeek，让你轻松享受AI大模型的快乐。  前提条件 已安装宝塔面板  操作步骤 DeepSeek 可以使用CPU进行推理，但是推荐使用NVIDIA GPU加速，文末将介绍如何使用NVIDIA GPU加速。   登录宝塔面板，点击左侧菜单栏中的Docker，进入Docker容器...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/articles/20210911.html" title="腾讯待办-一款待办事项和日程管理的效率工具"><img class="cover" src="https://resources.r2wind.cn/img/ocean-3605547_1280.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-09-11</div><div class="info-item-2">腾讯待办-一款待办事项和日程管理的效率工具</div></div><div class="info-2"><div class="info-item-1"> 腾讯待办是一款待办事项和日程管理的效率工具，能够帮助您高效完成任务和规划时间。支持管理日程、 分类分组、智能识别时间、重复提醒、便携共享协作等高效且实用功能。  产品功能轻松添加待办您可在腾讯待办小程序&#x2F;公众号&#x2F;App中方便且快速地创建待办任务，并且快捷设置时间、提醒、待办地点、分类分组、参与人等关键信息，创建待办任务时将智能识别您输入的时间，并为您主动设置时间及提醒，免去冗余的创建步骤。如：下午3点喝咖啡。将为您自动设置当天下午3点准时提醒任务。 多种分享方式创建待办任务时，您可 @ 好友与您共同协作。同时也支持好友 @ 您共同协作。创建待办后可以轻松分享到微信群或聊天中，邀请他人一起参与任务事项，其他人可以选择接受或者拒绝，接受的参与人将会自动接收提醒。同时，您也可以看到参与人的实时任务状态（已完成或未完成）。只要他曾经接收过您的待办，在腾讯待办中您们将成为好友。例如，当您想请他人帮您做一件事项时，怕他人忘记，您可在腾讯待办中创建待办，并将待办事项分享到微信群、朋友圈或聊天中，他人接受后便可收到提醒。此外，还支持分享“我的一天”，与他人分享您今天一天的安...</div></div></div></a><a class="pagination-related" href="/articles/20211017.html" title="腾讯待办-入门教程"><img class="cover" src="https://resources.r2wind.cn/img/flower-5189902_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-17</div><div class="info-item-2">腾讯待办-入门教程</div></div><div class="info-2"><div class="info-item-1">产品教程 大致写一下以下几个方面：创建待办、分享待办、待办分组、共享分组、订阅待办  创建待办如何快速创建一个待办？通过小程序或App创建创建完成后在列表中点击刚刚创建的待办可以查看或设置任务详情。 通过公众号创建待办 通过公众号创建待办时我们首先要绑定公众号，然后才能继续操作  绑定公众号 通过文字创建待办直接在公众号对话框输入待办内容（例如：“下午三点喝咖啡”）后发送就会自动创建一条待办了，创建后点击查看详情可以查看或设置任务详情。 通过语音创建待办可通过向公众号发送语音的方式创建新的待办，具体请参考： 如何创建周期性任务？ 分享待办待办详情页分享在待办详情点击参与人后通过添加联系人或分享（也可以在待办详情页直接分享）的方式添加参与人  注意：1、首次请先通过分享的方式添加参与人，好友接收同时会成为你的联系人，下次可直接通过添加联系人的方式添加参与人。2、通过添加联系人方式添加好友为参与人时好友会收到公众号发出的提醒，只有当好友点击提醒进入小程序接收后方可算完成添加。成员权限说明：只读：成员仅可以查看待办内容可编辑：成员可编辑待办内容l成员权限可以在参与人页面编辑，除此之外在...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#01%EF%BD%9CAI-%E7%BC%96%E7%A8%8B%E5%8A%A9%E6%89%8B%E6%89%8E%E5%A0%86%EF%BC%8CCodeBuddy-%E6%9C%89%E4%BD%95%E4%B8%8D%E5%90%8C%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">01｜AI 编程助手扎堆，CodeBuddy 有何不同？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#02%EF%BD%9C%E4%B8%8A%E6%89%8B-CodeBuddy%EF%BC%8C%E4%BA%A7%E5%93%81%E8%AE%BE%E8%AE%A1%E4%B8%80%E6%9D%A1%E9%BE%99"><span class="toc-number">2.</span> <span class="toc-text">02｜上手 CodeBuddy，产品设计一条龙</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#03%EF%BD%9C%E5%8E%9F%E5%9E%8B%E5%9B%BE-%E9%AB%98%E4%BF%9D%E7%9C%9F%E7%95%8C%E9%9D%A2%EF%BC%8CCodeBuddy-%E7%BB%A7%E7%BB%AD%E4%B8%8A%E5%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">03｜原型图 + 高保真界面，CodeBuddy 继续上场</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#04%EF%BD%9C%E4%BA%A7%E7%A0%94%E5%8D%8F%E5%90%8C%EF%BC%9A%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3-%E4%BB%BB%E5%8A%A1%E6%8B%86%E8%A7%A3-%E5%BC%80%E5%8F%91%E8%AE%A1%E5%88%92%EF%BC%8C%E4%B8%80%E7%AB%99%E5%BC%8F%E6%90%9E%E5%AE%9A"><span class="toc-number">4.</span> <span class="toc-text">04｜产研协同：接口文档 + 任务拆解 + 开发计划，一站式搞定</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#05%EF%BD%9C%E4%BD%93%E9%AA%8C%E6%80%BB%E7%BB%93%EF%BC%9A%E4%B8%8D%E6%AD%A2%E6%98%AF-AI-%E5%B7%A5%E5%85%B7%EF%BC%8C%E6%9B%B4%E5%83%8F%E6%98%AF%E4%B8%AA%E5%9B%A2%E9%98%9F%E6%90%AD%E5%AD%90"><span class="toc-number">5.</span> <span class="toc-text">05｜体验总结：不止是 AI 工具，更像是个团队搭子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#06%EF%BD%9C%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E%EF%BC%9AAI-%E6%98%AF%E5%B7%A5%E5%85%B7%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%A4%A7%E8%84%91"><span class="toc-number">6.</span> <span class="toc-text">06｜写在最后：AI 是工具，不是大脑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#00%EF%BD%9C-%E7%AC%94%E8%80%85%E7%8B%AC%E7%99%BD"><span class="toc-number">7.</span> <span class="toc-text">00｜ 笔者独白</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"><img src="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"/></a><div class="content"><a class="title" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</a><time datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2025-12-14T12:30:30.000Z" title="发表于 2025-12-14 20:30:30">2025-12-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"><img src="https://resources.r2wind.cn/img/202507/website.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"/></a><div class="content"><a class="title" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</a><time datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用宝塔面板部署一个属于自己的 DeepSeek"/></a><div class="content"><a class="title" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek">使用宝塔面板部署一个属于自己的 DeepSeek</a><time datetime="2025-02-03T04:35:22.000Z" title="发表于 2025-02-03 12:35:22">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板"><img src="https://resources.r2wind.cn/img/202412/winter-4680354_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在 istoreos 上部署宝塔面板"/></a><div class="content"><a class="title" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板">在 istoreos 上部署宝塔面板</a><time datetime="2024-12-26T02:58:56.000Z" title="发表于 2024-12-26 10:58:56">2024-12-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By 小泽</span><span class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></span></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>

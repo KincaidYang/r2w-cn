@@ -1,0 +1,273 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站 | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="云原生构建（Cloud Native Buildpacks，CNB）是一款基于 Docker 生态，对环境、缓存、插件进行抽象，通过声明式的语法，帮助开发者以更酷的方式构建软件的工具，本文将介绍如何使用 CNB 构建 Hexo 静态博客，并部署到腾讯云对象存储（COS）。  前提条件 注册云原生构建（CNB）账号，并完成实名认证，点此注册 已完成CNB组织的创建，注册完成后，在右上角头像处，点击">
+<meta property="og:type" content="article">
+<meta property="og:title" content="云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站">
+<meta property="og:url" content="https://r2wind.cn/articles/20241003.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="云原生构建（Cloud Native Buildpacks，CNB）是一款基于 Docker 生态，对环境、缓存、插件进行抽象，通过声明式的语法，帮助开发者以更酷的方式构建软件的工具，本文将介绍如何使用 CNB 构建 Hexo 静态博客，并部署到腾讯云对象存储（COS）。  前提条件 注册云原生构建（CNB）账号，并完成实名认证，点此注册 已完成CNB组织的创建，注册完成后，在右上角头像处，点击">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202410/20241002161828.png">
+<meta property="article:published_time" content="2024-10-03T09:06:30.000Z">
+<meta property="article:modified_time" content="2024-10-03T09:06:30.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="CNB">
+<meta property="article:tag" content="云原生构建">
+<meta property="article:tag" content="建站">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202410/20241002161828.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站",
+  "url": "https://r2wind.cn/articles/20241003.html",
+  "image": "https://resources.r2wind.cn/img/202410/20241002161828.png",
+  "datePublished": "2024-10-03T09:06:30.000Z",
+  "dateModified": "2024-10-03T09:06:30.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "小泽",
+      "url": "https://r2wind.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20241003.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MG9VW91X52"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MG9VW91X52')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MG9VW91X52', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div class="bg-animation" id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a><a class="nav-page-title" href="/"><span class="site-name">云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">云原生构建（CNB）+腾讯云COS + Hexo 部署静态博客网站</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-03T09:06:30.000Z" title="发表于 2024-10-03 17:06:30">2024-10-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-03T09:06:30.000Z" title="更新于 2024-10-03 17:06:30">2024-10-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><blockquote>
+<p>云原生构建（Cloud Native Buildpacks，CNB）是一款基于 Docker 生态，对环境、缓存、插件进行抽象，通过声明式的语法，帮助开发者以更酷的方式构建软件的工具，本文将介绍如何使用 CNB 构建 Hexo 静态博客，并部署到腾讯云对象存储（COS）。</p>
+</blockquote>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><ol>
+<li>注册云原生构建（CNB）账号，并完成实名认证，<a target="_blank" rel="noopener" href="https://cnb.cool/profile/auth">点此注册</a></li>
+<li>已完成CNB组织的创建，注册完成后，在右上角<code>头像</code>处，点击<code>我的组织</code>，然后点击<code>创建组织</code>，按提示完成组织创建</li>
+<li>已开通<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos">腾讯云对象存储（COS）服务</a></li>
+</ol>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="新建代码仓库"><a href="#新建代码仓库" class="headerlink" title="新建代码仓库"></a>新建代码仓库</h3><ol>
+<li>登录<a target="_blank" rel="noopener" href="https://cnb.cool/">云原生构建（CNB）</a>控制台，在右上角<code>头像</code>处，点击<code>我的仓库</code>，然后点击<code>创建仓库</code>，按提示完成仓库创建<br><img src="https://resources.r2wind.cn/img/202410/20241003103601.png" alt="新建代码仓库"></li>
+</ol>
+<div class="note info flat"><p>仓库归属：选择你的组织<br>仓库名称：填写你的仓库名称<br>仓库描述：填写你的仓库描述<br>公开性：选择是否公开，建议私有</p>
+</div>
+<ol start="2">
+<li>点击<code>创建</code>，完成仓库创建</li>
+<li>创建完成后，页面将提示<code>仓库暂未完成初始化，您可以选择以下任一方式完成仓库的初始化</code>，这时点击<code>云原生开发</code><br><img src="https://resources.r2wind.cn/img/202410/20241003104012.png" alt="仓库初始化"></li>
+<li>等待环境初始化完成，点击<code>使用 WEB IDE 打开</code>，进入代码编辑界面<br><img src="https://resources.r2wind.cn/img/202410/20241003104201.png" alt="环境构建完成"></li>
+<li>在编辑器的<code>终端</code>中，输入以下命令，克隆 Hexo 仓库到当前目录</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cnb-init-from https://cnb.cool/examples/ecosystem/hexo-cos-demo.git</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>等待克隆完成<br><img src="https://resources.r2wind.cn/img/202410/20241003104517.png" alt="克隆仓库"></li>
+<li>完成后关闭当前窗口，返回仓库页面，刷新，并点击<code>云原生构建</code><br><img src="https://resources.r2wind.cn/img/202410/20241003161801.png" alt="返回仓库页面"></li>
+<li>找到通过<code>vscode</code>触发的任务并点击<br><img src="https://resources.r2wind.cn/img/202410/20241003104848.png" alt="触发任务"></li>
+<li>进入后点击<code>停止构建</code><br><img src="https://resources.r2wind.cn/img/202410/20241003160240.png" alt="停止构建"></li>
+</ol>
+<h3 id="新建存储桶"><a href="#新建存储桶" class="headerlink" title="新建存储桶"></a>新建存储桶</h3><ol>
+<li>登录<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos">腾讯云对象存储（COS）控制台</a>，在左侧导航栏中点击<code>存储桶列表</code>,点击<code>创建存储桶</code><br><img src="https://resources.r2wind.cn/img/202410/20241003134927.png" alt="新建存储桶"></li>
+<li>按提示填写信息完成存储桶创建<br><img src="https://resources.r2wind.cn/img/202410/20241003135237.png" alt="填写存储桶信息"></li>
+</ol>
+<div class="note info flat"><p>地域：选择存储桶所在地域，就近选择即可，默认广州<br>名称：填写存储桶名称<br>访问权限：选择<code>公有读私有写</code>，建议选择<code>私有读写</code>，此处为了演示方便选择<code>公有读私有写</code><br>其他默认即可</p>
+</div>
+<div class="note warning flat"><p>此处仅为了演示方便，选择了公有读私有写，实际使用时不建议大家直接使用 COS 存储桶直接对外提供访问服务，而是通过 CDN 等服务进行加速访问。</p>
+</div>
+<ol start="3">
+<li>创建完成后保存<code>存储桶名称</code>和<code>存储桶地域</code>，后续需要使用<br><img src="https://resources.r2wind.cn/img/202410/20241003135840.png" alt="存储桶信息"></li>
+</ol>
+<h3 id="新建腾讯云API密钥"><a href="#新建腾讯云API密钥" class="headerlink" title="新建腾讯云API密钥"></a>新建腾讯云API密钥</h3><ol>
+<li>登录<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cam/capi">腾讯云-访问管理</a>，点击<code>新建密钥</code><br><img src="https://resources.r2wind.cn/img/202410/20241003140033.png" alt="新建密钥"></li>
+<li>保存<code>SecretId</code>和<code>SecretKey</code>，后续需要使用<br><img src="https://resources.r2wind.cn/img/202410/20241003140119.png" alt="密钥信息"></li>
+</ol>
+<h3 id="新建密钥仓库"><a href="#新建密钥仓库" class="headerlink" title="新建密钥仓库"></a>新建密钥仓库</h3><blockquote>
+<p>密钥仓库用于存储敏感信息，如密钥、密码等供构建时使用</p>
+</blockquote>
+<ol>
+<li>登录<a target="_blank" rel="noopener" href="https://cnb.cool/">云原生构建（CNB）</a>控制台，在右上角<code>头像</code>处，点击<code>我的仓库</code>，然后点击<code>创建仓库</code>，按提示完成仓库创建<br><img src="https://resources.r2wind.cn/img/202410/20241003140454.png" alt="新建密钥仓库"></li>
+</ol>
+<div class="note info flat"><p>仓库归属：选择你的组织<br>仓库名称：填写你的仓库名称<br>仓库描述：填写你的仓库描述<br>公开性：选择密钥仓库</p>
+</div>
+<ol start="2">
+<li>点击<code>创建</code>，完成仓库创建</li>
+<li>点击<code>新建</code>，选择<code>新建文件</code>，填写文件名<code>hexo_cos_secret.yml</code>，内容如下</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 腾讯云 SecretId</span></span><br><span class="line"><span class="attr">COS_SECRET_ID:</span> <span class="string">AKIDCOxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span></span><br><span class="line"><span class="comment"># 腾讯云 SecretKey</span></span><br><span class="line"><span class="attr">COS_SECRET_KEY:</span> <span class="string">tt3S4fExxxxxxxxxxxxxxxxxxxxxxxx</span></span><br><span class="line"><span class="comment"># 腾讯云 COS 存储桶名称</span></span><br><span class="line"><span class="attr">COS_BUCKET:</span> <span class="string">hexo-demo-xxxxxxx</span></span><br><span class="line"><span class="comment"># 腾讯云 COS 存储桶地域</span></span><br><span class="line"><span class="attr">COS_REGION:</span> <span class="string">ap-guangzhou</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://resources.r2wind.cn/img/202410/20241003142551.png" alt="新建密钥文件"><br>4. 点击<code>提交</code>，完成密钥文件创建<br>5. 创建完成后在<code>仓库</code>页面，点击刚刚创建的文件，在浏览器地址栏中复制<code>链接地址</code>，后续需要使用<br><img src="https://resources.r2wind.cn/img/202410/20241003142829.png" alt="复制链接地址"></p>
+<h3 id="编辑站点基本信息-新建页面"><a href="#编辑站点基本信息-新建页面" class="headerlink" title="编辑站点基本信息 &amp;&amp; 新建页面"></a>编辑站点基本信息 &amp;&amp; 新建页面</h3><ol>
+<li>在仓库首页点击<code>云原生开发</code><br><img src="https://resources.r2wind.cn/img/202410/20241003105400.png" alt="云原生开发"></li>
+<li>等待环境初始化完成，点击<code>使用 WEB IDE 打开</code>，进入代码编辑界面<br><img src="https://resources.r2wind.cn/img/202410/20241003105950.png" alt="环境构建完成"></li>
+<li>进入编辑器后，打开<code>_config.yml</code>文件，修改站点基本信息，完成修改后保存即可<br><img src="https://resources.r2wind.cn/img/202410/20241003110501.png" alt="修改站点基本信息"></li>
+<li>您可通过在终端运行<code>hexo n 文章标题</code>命令新建文章，也可直接在<code>source/_posts</code>目录下新建<code>md</code>文件，编辑文章内容，具体操作可参考<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/writing">Hexo官方文档</a>，这里不再赘述</li>
+</ol>
+<h3 id="配置云原生构建"><a href="#配置云原生构建" class="headerlink" title="配置云原生构建"></a>配置云原生构建</h3><ol>
+<li>在编辑器中打开<code>.cnb.yml</code>文件，修改配置<br><img src="https://resources.r2wind.cn/img/202410/20241003143437.png" alt="修改构建配置"></li>
+</ol>
+<div class="note info flat"><ul>
+<li>去除指定行的注释符<code>#</code></li>
+<li>将<code>import</code>行中的链接替换成密钥仓库文件的链接地址</li>
+</ul>
+</div>
+<ol start="2">
+<li>完成修改后保存即可<br><img src="https://resources.r2wind.cn/img/202410/20241003144017.png" alt="保存配置"></li>
+</ol>
+<h3 id="提交代码并构建"><a href="#提交代码并构建" class="headerlink" title="提交代码并构建"></a>提交代码并构建</h3><ol>
+<li>在编辑器左侧菜单栏中点击<code>源代码管理</code><br><img src="https://resources.r2wind.cn/img/202410/20241003144218.png" alt="源代码管理"></li>
+<li>在弹出的窗口中，填写<code>提交信息</code>，点击<code>提交</code><br><img src="https://resources.r2wind.cn/img/202410/20241003144419.png" alt="提交代码"></li>
+<li>提交完成后点击<code>Sync Changes</code>，同步代码<br><img src="https://resources.r2wind.cn/img/202410/20241003144515.png" alt="同步代码"></li>
+<li>等待同步完成后，返回仓库页面，点击<code>云原生构建</code><br><img src="https://resources.r2wind.cn/img/202410/20241003144720.png" alt="返回仓库页面"></li>
+<li>点击<code>通过 push 触发的任务</code>，进入构建页面<br><img src="https://resources.r2wind.cn/img/202410/20241003144816.png" alt="触发构建"></li>
+<li>可在构建页面查看构建日志，等待构建完成</li>
+<li>构建完成后，我们可以前往<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos">腾讯云 COS 控制台</a>查看存储桶中是否已经上传了静态网站文件<br><img src="https://resources.r2wind.cn/img/202410/20241003145031.png" alt="查看存储桶"><br><img src="https://resources.r2wind.cn/img/202410/20241003150926.png" alt="查看存储桶"></li>
+</ol>
+<h3 id="开启存储桶静态网站"><a href="#开启存储桶静态网站" class="headerlink" title="开启存储桶静态网站"></a>开启存储桶静态网站</h3><ol>
+<li>在<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos">腾讯云 COS 控制台</a>中，点击<code>存储桶列表</code>，找到刚刚创建的存储桶，点击<code>配置管理</code></li>
+<li>在左侧导航栏中点击<code>静态网站</code>，点击<code>编辑</code><br><img src="https://resources.r2wind.cn/img/202410/20241003151046.png" alt="启用静态网站"></li>
+<li>勾选<code>启用静态网站</code>，填写<code>索引文档</code>，点击<code>保存</code><br><img src="https://resources.r2wind.cn/img/202410/20241003151146.png" alt="配置静态网站"></li>
+</ol>
+<h3 id="绑定自定义域名"><a href="#绑定自定义域名" class="headerlink" title="绑定自定义域名"></a>绑定自定义域名</h3><blockquote>
+<p>2024年1月1日后创建的桶不支持使用默认域名在浏览器预览文件，所以需要绑定自定义域名，境内存储桶需要绑定已备案的域名</p>
+</blockquote>
+<ol>
+<li>在<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos">腾讯云 COS 控制台</a>中，点击<code>存储桶列表</code>，找到刚刚创建的存储桶，点击<code>配置管理</code></li>
+<li>在左侧导航栏中点击<code>域名与传输管理-自定义源站域名</code>，点击<code>添加域名</code><br><img src="https://resources.r2wind.cn/img/202410/20241003151515.png" alt="添加域名"></li>
+<li>按提示填写信息完成域名绑定<br><img src="https://resources.r2wind.cn/img/202410/20241003151616.png" alt="填写域名信息"></li>
+</ol>
+<div class="note info flat"><p>域名：填写您的域名<br>源站类型：静态网站源站</p>
+</div>
+<ol start="4">
+<li>添加完成后请前往域名服务商处添加解析，将域名解析到存储桶静态网站域名<br><img src="https://resources.r2wind.cn/img/202410/20241003151926.png" alt="添加解析"></li>
+<li>解析完成后，即可通过域名访问静态网站<br><img src="https://resources.r2wind.cn/img/202410/20241003154347.png" alt="访问静态网站"></li>
+</ol>
+<h2 id="后续操作"><a href="#后续操作" class="headerlink" title="后续操作"></a>后续操作</h2><p>正如上面所提到的，使用 COS 直接对外提供访问是一个很危险的行为，建议大家使用 CDN 等服务进行加速访问。<br>PS：有人可能好奇密钥为什么不打码，因为写完文章就删了，但是如果你是在生产环境中使用，请务必保护好你的密钥。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20241003.html">https://r2wind.cn/articles/20241003.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CNB/">CNB</a><a class="post-meta__tags" href="/tags/%E5%BB%BA%E7%AB%99/">建站</a><a class="post-meta__tags" href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F%E6%9E%84%E5%BB%BA/">云原生构建</a></div><div class="post-share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202410/20241002161828.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/articles/20241209.html" title="在飞牛 NAS 上部署宝塔面板"><img class="cover" src="https://resources.r2wind.cn/img/202412/watzmann-9024287_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">在飞牛 NAS 上部署宝塔面板</div></div><div class="info-2"><div class="info-item-1"> 飞牛 NAS 最近在家庭私有云市场上越来越火爆，很多小伙伴还想在家里搭建个网站或者其他开源的Web应用，比如一些相册、笔记、影视库，甚至WordPress、Discuz、Typecho等，这时候宝塔面板就派上用场了。宝塔面板是一款免费的服务器管理面板，支持Linux和Windows系统，可以帮助你快速搭建网站、数据库、FTP、邮件等服务，还支持一键安装PHP、MySQL、Nginx、Apache等环境，非常适合小白用户使用。本文将介绍如何在飞牛 NAS 上部署宝塔面板。  本文介绍的是通过Docker容器的方式在飞牛 NAS 上部署宝塔面板，直接在系统内安装侵入较大，不推荐。  前提条件 已部署飞牛 NAS 安装并完成了数据盘的初始化（已创建存储空间）  操作步骤 打开浏览器，输入飞牛 NAS 的管理地址，例如：http://192.168.164.128:8000/login 输入用户名和密码登录 登录后双击桌面上的“Docker”图标，进入Docker管理界面 首次进入会提示设置存储路径，按引导完成设置。 选择左侧菜单栏中的compose，点击新建项目。 在弹出的对话框中填...</div></div></div></a><a class="pagination-related" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3"><img class="cover" src="https://resources.r2wind.cn/img/202403/boat-8614314_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP/3</div></div><div class="info-2"><div class="info-item-1"> 之前在 Nginx-Quic 分支被合并到了 Nginx 主线的时候写过一篇使用 BoringSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3 的文章，详见 Nginx 编译开启 Quic 或 HTTP&#x2F;3。但是由于 BoringSSL 上个月发布了一个破坏性的更新导致编译出错，虽然最后解决了问题但回头想想觉得还是可以转向更稳定、兼容性更好的 QuicTLS，所以本文将为您介绍如何使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3。  安装依赖1234567891011121314# Debian 11或12apt updateapt install build-essential ca-certificates zlib1g-dev libpcre3 libpcre3-dev tar unzip libssl-dev wget curl git cmake ninja-build mercurial libunwind-dev pkg-config libjemalloc-dev# Ubuntu 22.04或2...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3"><img class="cover" src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-14</div><div class="info-item-2">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3</div></div><div class="info-2"><div class="info-item-1"> 之前在 Nginx-Quic 分支被合并到了 Nginx 主线的时候写过一篇使用 BoringSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3 的文章，详见 Nginx 编译开启 Quic 或 HTTP&#x2F;3，随着 Nginx 主线在 2025 年 7 月底（Nginx 1.29.0+）的一个提交中引入了对 OpenSSL QUIC 的适配支持（仅支持OpenSSL 3.5.1 及以上版本），本文将为您介绍如何使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3。  OpenSSL 3.5.1 默认仅在较新的 Linux 发行版中可用，例如 Debian 13，本文以 Debian 13 为例进行演示。如果您使用的是较旧的发行版，可能需要手动编译 OpenSSL 3.5.1 或升级您的操作系统。   安装依赖123# Debian 13apt updateapt install build-essential ca-certificates zlib1g-dev libpcre2-dev tar unzip libs...</div></div></div></a><a class="pagination-related" href="/articles/20230526.html" title="Nginx 编译开启 Quic 或 HTTP&#x2F;3"><img class="cover" src="https://resources.r2wind.cn/img/202305/dandelion-445228_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-26</div><div class="info-item-2">Nginx 编译开启 Quic 或 HTTP&#x2F;3</div></div><div class="info-2"><div class="info-item-1"> 随着最近 Nginx-Quic 分支被合并到了 Nginx 主线，Nginx 1.25.0 版本官方二进制包已经支持 Quic&#x2F;HTTP3，感兴趣的朋友可以前往 https://nginx.org/en/download.html 或 https://nginx.org/en/linux_packages.html 下载安装，体验一下 Quic&#x2F;HTTP3 的魅力，本文将主要为您介绍如何通过编译的方式开启 Quic&#x2F;HTTP3。  2025年06月16日更新：更新了部分编译参数2025年05月15日更新：没错，boringssl又更新了，影响gcc13以下版本，因此修改编译时的参数。详见https://github.com/google/boringssl/commit/5e3ba4c15b67ed00fe8a71dc3a45ebd6211d299f 。2024年11月10日更新：Nginx已将仓库迁移至Github，因此删除部分依赖，更新仓库链接2024年04月11日更新：大部分系统下默认存在着www-data用户组和www-data用户，所以不...</div></div></div></a><a class="pagination-related" href="/articles/20240307.html" title="使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3"><img class="cover" src="https://resources.r2wind.cn/img/202403/boat-8614314_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-07</div><div class="info-item-2">使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3</div></div><div class="info-2"><div class="info-item-1"> 之前在 Nginx-Quic 分支被合并到了 Nginx 主线的时候写过一篇使用 BoringSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3 的文章，详见 Nginx 编译开启 Quic 或 HTTP&#x2F;3。但是由于 BoringSSL 上个月发布了一个破坏性的更新导致编译出错，虽然最后解决了问题但回头想想觉得还是可以转向更稳定、兼容性更好的 QuicTLS，所以本文将为您介绍如何使用 QuicTLS 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3。  安装依赖1234567891011121314# Debian 11或12apt updateapt install build-essential ca-certificates zlib1g-dev libpcre3 libpcre3-dev tar unzip libssl-dev wget curl git cmake ninja-build mercurial libunwind-dev pkg-config libjemalloc-dev# Ubuntu 22.04或2...</div></div></div></a><a class="pagination-related" href="/articles/20211214.html" title="如何使用腾讯云COS+CDN搭建一个属于自己的图床"><img class="cover" src="https://resources.r2wind.cn/img/sky-6852497_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-12-14</div><div class="info-item-2">如何使用腾讯云COS+CDN搭建一个属于自己的图床</div></div><div class="info-2"><div class="info-item-1"> 写这篇文章主要目的是为了解决一些使用建站产品的友友因上传的图片太多导致空间爆满的问题，这里采用腾讯云COS+CDN的方式进行搭建，以便节约成本和风险控制。  创建存储桶 一般来讲新用户开通都会赠送免费额度，详情可查看对象存储：免费额度,若免费额度不够请自行购买，具体可以咨询官网客服。注意：COS回源流量貌似不提供免费额度，请自行前往活动页面或流量包管理页面购买CDN回源流量包，此过程中遇到任何问题均请咨询官网客服。  创建存储桶前往控制台点击“创建存储桶”进行创建。  所属地域：根据需要选择，这里以广州为例名称：根据需要填写，这里以tuchuang为例访问权限：私有读写填写完上述信息点击下一步后再点击下一步（高级设置一般无需填写默认即可）确认信息创建存储桶即可。  创建CDN服务 一般来讲新用户开通会赠送一定量免费额度，若额度不够请前往活动页面或CDN流量包管理页面进行购买。  创建CDN服务前往CDN控制台点击添加域名进行创建。  加速区域：中国境内域名：根据需要填写，可以是主域名下任意域名,不要和网站域名相同。加速类型：CDN网页小文件、IPV6访问：建议开启所属项目：默认...</div></div></div></a><a class="pagination-related" href="/articles/20230612.html" title="记一次使用 fontTools 优化网页字体（字体文件大小）"><img class="cover" src="https://resources.r2wind.cn/img/202306/animal-8050742_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-12</div><div class="info-item-2">记一次使用 fontTools 优化网页字体（字体文件大小）</div></div><div class="info-2"><div class="info-item-1"> 一直以来，本站使用的是 HarmonyOS Sans 字体，但由于中文字体文件过大（约 4.3 MB），导致网页加载速度缓慢，不利于弱网环境下的访问。因此，本文将介绍如何使用 fontTools 中的 pyftsubset 对网页字体进行切片，以优化网页字体文件大小。  安装依赖使用前需要安装 Python 3,fontTools 以及 woff2 安装 Python 3Python3 一般系统都有自带，如果没有，可以使用以下命令安装： 12# Debian/Ubuntuapt install python3  安装 fontTools安装完成后，使用以下命令安装 fontTools： 123pip3 install fontTools# 在一些版本的 Debian/Ubuntu 系统中，可能需要使用以下命令apt install python3-fonttools  一些系统可能需要使用 pip 命令，具体可自行尝试。  安装 woff2在对字体文件进行切片后，需要将字体文件转换为 woff2 格式，因此需要安装 woff2 工具： 123456789101112131415...</div></div></div></a><a class="pagination-related" href="/articles/20230508.html" title="利用 Nginx 搭建 IP 查询接口"><img class="cover" src="https://resources.r2wind.cn/img/202305/nature-7602212_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-08</div><div class="info-item-2">利用 Nginx 搭建 IP 查询接口</div></div><div class="info-2"><div class="info-item-1"> 本文将介绍如何利用纯 Nginx 搭建 IP 地址查询接口（只查询 IP 地址，不查询 IP 归属地），如果有查询 IP 归属地的需求，可以参考另一位大佬的一篇文章 纯 Nginx 打造 IP 地址查询接口。   好久不见，这两个月由于一些原因（考试、面试）一直没有更新博客，今天终于有时间了，就赶忙来更新。用 Nginx 来获取 IP 这个方法是去年 8 月份在处理DDNS Openwrt 插件无法更新 IP 的 case 时了解到的，当时插件里获取 IP 的接口 ns1.dnspod.net:6666 由于是早些年写的一个程序仅支持 http&#x2F;0.9 导致 DDNS 插件无法正常获取 IP 地址，后面一位大佬改用 Nginx 来获取 IP 地址，那次才知道 Nginx 原来还能这么用，简直是学艺不精哈哈哈。   安装 Nginx 的方法就不介绍了，直接丢配置文件了。   文末有现成的，如果你不想自己搭建的话可以直接使用。  配置示例获取 IP(JSON)123456789101112131415161718192021222324252627282930313233...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">前提条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">操作步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93"><span class="toc-number">2.1.</span> <span class="toc-text">新建代码仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E5%AD%98%E5%82%A8%E6%A1%B6"><span class="toc-number">2.2.</span> <span class="toc-text">新建存储桶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%85%BE%E8%AE%AF%E4%BA%91API%E5%AF%86%E9%92%A5"><span class="toc-number">2.3.</span> <span class="toc-text">新建腾讯云API密钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E5%AF%86%E9%92%A5%E4%BB%93%E5%BA%93"><span class="toc-number">2.4.</span> <span class="toc-text">新建密钥仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E7%AB%99%E7%82%B9%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF-%E6%96%B0%E5%BB%BA%E9%A1%B5%E9%9D%A2"><span class="toc-number">2.5.</span> <span class="toc-text">编辑站点基本信息 &amp;&amp; 新建页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%BA%91%E5%8E%9F%E7%94%9F%E6%9E%84%E5%BB%BA"><span class="toc-number">2.6.</span> <span class="toc-text">配置云原生构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81%E5%B9%B6%E6%9E%84%E5%BB%BA"><span class="toc-number">2.7.</span> <span class="toc-text">提交代码并构建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E5%AD%98%E5%82%A8%E6%A1%B6%E9%9D%99%E6%80%81%E7%BD%91%E7%AB%99"><span class="toc-number">2.8.</span> <span class="toc-text">开启存储桶静态网站</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9A%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D"><span class="toc-number">2.9.</span> <span class="toc-text">绑定自定义域名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E6%93%8D%E4%BD%9C"><span class="toc-number">3.</span> <span class="toc-text">后续操作</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"><img src="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"/></a><div class="content"><a class="title" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</a><time datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2025-12-14T12:30:30.000Z" title="发表于 2025-12-14 20:30:30">2025-12-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"><img src="https://resources.r2wind.cn/img/202507/website.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"/></a><div class="content"><a class="title" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</a><time datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用宝塔面板部署一个属于自己的 DeepSeek"/></a><div class="content"><a class="title" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek">使用宝塔面板部署一个属于自己的 DeepSeek</a><time datetime="2025-02-03T04:35:22.000Z" title="发表于 2025-02-03 12:35:22">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板"><img src="https://resources.r2wind.cn/img/202412/winter-4680354_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在 istoreos 上部署宝塔面板"/></a><div class="content"><a class="title" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板">在 istoreos 上部署宝塔面板</a><time datetime="2024-12-26T02:58:56.000Z" title="发表于 2024-12-26 10:58:56">2024-12-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By 小泽</span><span class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></span></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>

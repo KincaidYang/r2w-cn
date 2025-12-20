@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案 | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="2024年4月27日更新：基于谷歌最新的投递建议，需同时配置 spf 、dmarc 、dkim 三种记录，本文做部分更新   近期有小伙伴反应使用腾讯企业邮箱向 Gmail 发送邮件遇到被退回的情况，退信提示中包含：550 5.7.26，协助排查了几个case，发现原因基本都是没有添加SPF记录导致的，下面给大家分享一下排查解决方案：  前提条件本教程仅适用于使用腾讯云企业邮箱且域名托管在腾讯云">
+<meta property="og:type" content="article">
+<meta property="og:title" content="腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案">
+<meta property="og:url" content="https://r2wind.cn/articles/20220810.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="2024年4月27日更新：基于谷歌最新的投递建议，需同时配置 spf 、dmarc 、dkim 三种记录，本文做部分更新   近期有小伙伴反应使用腾讯企业邮箱向 Gmail 发送邮件遇到被退回的情况，退信提示中包含：550 5.7.26，协助排查了几个case，发现原因基本都是没有添加SPF记录导致的，下面给大家分享一下排查解决方案：  前提条件本教程仅适用于使用腾讯云企业邮箱且域名托管在腾讯云">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202208/hohenzollern-7370477_1920.jpg">
+<meta property="article:published_time" content="2022-08-10T11:41:48.000Z">
+<meta property="article:modified_time" content="2024-04-27T11:41:48.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="DNSPod">
+<meta property="article:tag" content="企业邮箱">
+<meta property="article:tag" content="作品集">
+<meta property="article:tag" content="域名">
+<meta property="article:tag" content="腾讯云">
+<meta property="article:tag" content="解析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202208/hohenzollern-7370477_1920.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案",
+  "url": "https://r2wind.cn/articles/20220810.html",
+  "image": "https://resources.r2wind.cn/img/202208/hohenzollern-7370477_1920.jpg",
+  "datePublished": "2022-08-10T11:41:48.000Z",
+  "dateModified": "2024-04-27T11:41:48.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "小泽",
+      "url": "https://r2wind.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20220810.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MG9VW91X52"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MG9VW91X52')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MG9VW91X52', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div class="bg-animation" id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a><a class="nav-page-title" href="/"><span class="site-name">腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-10T11:41:48.000Z" title="发表于 2022-08-10 19:41:48">2022-08-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-04-27T11:41:48.000Z" title="更新于 2024-04-27 19:41:48">2024-04-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><div class="note info simple"><p>2024年4月27日更新：基于谷歌最新的投递建议，需同时配置 spf 、dmarc 、dkim 三种记录，本文做部分更新</p>
+</div>
+<blockquote>
+<p>近期有小伙伴反应使用腾讯企业邮箱向 Gmail 发送邮件遇到被退回的情况，退信提示中包含：550 5.7.26，协助排查了几个case，发现原因基本都是没有添加SPF记录导致的，下面给大家分享一下排查解决方案：</p>
+</blockquote>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><p>本教程仅适用于使用腾讯云企业邮箱且域名托管在腾讯云 DNSPod 的用户，若您域名托管在其他服务商，此教程仅可做部分参考：</p>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="登录腾讯云-DNSPod-控制台"><a href="#登录腾讯云-DNSPod-控制台" class="headerlink" title="登录腾讯云 DNSPod 控制台"></a>登录腾讯云 DNSPod 控制台</h3><p>1、登录 <a target="_blank" rel="noopener" href="https://console.dnspod.cn/dns/list">DNSPod 解析控制台</a>，如下图所示：<br><img src="https://resources.r2wind.cn/img/202208/dnspod-login.png" alt="腾讯云控制台"><br>2、点击对应的域名进入记录详情页面，如下图所示：<br><img src="https://resources.r2wind.cn/img/202208/dnspod-record-detail.png" alt="记录详情"></p>
+<h3 id="添加记录"><a href="#添加记录" class="headerlink" title="添加记录"></a>添加记录</h3><h4 id="添加SPF记录"><a href="#添加SPF记录" class="headerlink" title="添加SPF记录"></a>添加SPF记录</h4><blockquote>
+<p><strong>说明：</strong></p>
+<ol>
+<li>发件人策略框架 SPF(Sender Policy Framework)：可用于指定发送邮件的服务器，是一种广泛部署且非常高效的垃圾邮件解决方案。</li>
+<li>SPF记录对于新手来讲整体较为复杂，不建议大家自行编写添加，请使用企业邮箱提供的模板添加。<br><strong>记录内容：</strong><br>主机记录：@<br>记录类型：选择TXT和SPF均可，建议选择TXT（SPF记录是TXT记录的一种特殊形式）<br>记录值（文本内容）：v&#x3D;spf1 include:spf.mail.qq.com ~all<br>其他：未涉及到的保持默认即可</li>
+</ol>
+</blockquote>
+<p><strong>1、点击”添加记录”，按上述”记录内容”进行填写，如下图所示：</strong><br><strong>界面一：</strong><br><img src="https://resources.r2wind.cn/img/202208/dnspod-add-record-spf-1.png" alt="添加记录"><br><strong>界面二：</strong><br><img src="https://resources.r2wind.cn/img/202208/dnspod-add-record-spf-2.png" alt="添加记录"><br><strong>2、填写完成后点击确认保存即可</strong></p>
+<h4 id="添加DMARC记录"><a href="#添加DMARC记录" class="headerlink" title="添加DMARC记录"></a>添加DMARC记录</h4><blockquote>
+<p><strong>说明：</strong><br>DMARC（Domain-based Message Authentication, Authorization &amp; Reporting）：是一种基于现有的SPF和DKIM协议的可扩展电子邮件认证协议，邮件收发双方建立了邮件反馈机制，便于邮件发送方和邮件接收方共同对域名的管理进行完善和监督<br><strong>记录内容：</strong><br>主机记录：_dmarc<br>记录类型：TXT<br>记录值（文本内容）：v&#x3D;DMARC1; p&#x3D;none; rua&#x3D;mailto:<a href="mailto:&#x6d;&#x61;&#105;&#108;&#97;&#x75;&#116;&#x68;&#45;&#x72;&#x65;&#x70;&#111;&#x72;&#116;&#x73;&#64;&#x71;&#x71;&#x2e;&#x63;&#x6f;&#109;">mailauth-reports@qq.com</a><br>说明：<a href="mailto:&#109;&#x61;&#105;&#108;&#97;&#x75;&#116;&#104;&#45;&#114;&#101;&#112;&#111;&#114;&#x74;&#115;&#x40;&#x71;&#x71;&#46;&#x63;&#x6f;&#x6d;">mailauth-reports@qq.com</a>请替换成专用于接收您网域DMARC活动报告的邮箱地址，或者专门处理DMARC报告的第三方服务，若您不需要接收报告，请删除”rua&#x3D;mailto:<a href="mailto:&#109;&#x61;&#x69;&#x6c;&#x61;&#x75;&#x74;&#x68;&#x2d;&#x72;&#x65;&#x70;&#x6f;&#114;&#116;&#115;&#x40;&#113;&#x71;&#x2e;&#99;&#x6f;&#109;">mailauth-reports@qq.com</a>“字段<br>其他：未涉及到的保持默认即可</p>
+</blockquote>
+<p><strong>1、点击”添加记录”，按上述”记录内容”进行填写，如下图所示：</strong><br><strong>界面一：</strong><br><img src="https://resources.r2wind.cn/img/202208/dnspod-add-record-dmarc-1.png" alt="添加记录"><br><strong>界面二：</strong><br><img src="https://resources.r2wind.cn/img/202208/dnspod-add-record-dmarc-2.png" alt="添加记录"><br><strong>2、填写完成后点击确认保存即可</strong></p>
+<h4 id="添加DKIM记录"><a href="#添加DKIM记录" class="headerlink" title="添加DKIM记录"></a>添加DKIM记录</h4><blockquote>
+<p><strong>说明：</strong><br>DKIM是一种防范电子邮件欺诈的验证技术，通过消息加密认证的方式对邮件发送域名进行验证。<br>邮件发送方发送邮件时，利用本域私钥加密邮件生成DKIM签名，将DKIM签名及其相关信息插入邮件头。邮件接收方接收邮件时，通过DNS查询获得公钥，验证邮件DKIM签名的有效性。从而确认在邮件发送的过程中，防止邮件被恶意篡改，保证邮件内容的完整性。</p>
+</blockquote>
+<p>参见 <a target="_blank" rel="noopener" href="https://open.work.weixin.qq.com/help2/pc/19647">腾讯企业邮箱 DKIM 配置指引</a></p>
+<h3 id="验证记录是否生效"><a href="#验证记录是否生效" class="headerlink" title="验证记录是否生效"></a>验证记录是否生效</h3><h4 id="验证SPF记录是否生效"><a href="#验证SPF记录是否生效" class="headerlink" title="验证SPF记录是否生效"></a>验证SPF记录是否生效</h4><p><strong>1、打开 <a target="_blank" rel="noopener" href="https://tool.dnspod.cn/">DNSPod 域名检测工具</a>，输入域名后点击检测，如下图所示：</strong><br><img src="https://resources.r2wind.cn/img/202208/dnspod-check-domain.png" alt="检测域名"><br><strong>2、下滑找到 DNS 服务商解析结果，点击详情，结果中包含”v&#x3D;spf1 include:spf.mail.qq.com ~all”即可，如下图所示：</strong><br><img src="https://resources.r2wind.cn/img/202208/dnspod-check-result-spf.png" alt="检测结果"></p>
+<h4 id="验证DMARC记录是否生效"><a href="#验证DMARC记录是否生效" class="headerlink" title="验证DMARC记录是否生效"></a>验证DMARC记录是否生效</h4><p>暂无法通过工具验证，可在linux下使用dig进行验证</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig _dmarc.+域名 txt</span><br></pre></td></tr></table></figure>
+<p>示例</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dig _dmarc.r2wind.org txt</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20220810.html">https://r2wind.cn/articles/20220810.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DNSPod/">DNSPod</a><a class="post-meta__tags" href="/tags/%E8%85%BE%E8%AE%AF%E4%BA%91/">腾讯云</a><a class="post-meta__tags" href="/tags/%E5%9F%9F%E5%90%8D/">域名</a><a class="post-meta__tags" href="/tags/%E8%A7%A3%E6%9E%90/">解析</a><a class="post-meta__tags" href="/tags/%E4%BD%9C%E5%93%81%E9%9B%86/">作品集</a><a class="post-meta__tags" href="/tags/%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1/">企业邮箱</a></div><div class="post-share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202208/hohenzollern-7370477_1920.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/articles/20220908.html" title="为什么添加一些解析的时候记录值（域名）后面会带个点？"><img class="cover" src="https://resources.r2wind.cn/img/202209/tree-736885.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">为什么添加一些解析的时候记录值（域名）后面会带个点？</div></div><div class="info-2"><div class="info-item-1"> 很多朋友可能会发现，在添加 CNAME、MX、NS 等记录的时候，记录值后面通常会自动补充一个”.”（如下图），那为什么会自动添加这个”.”呢？  为什么会自动添加”.”呢？DNS 命名空间结构要知到答案，那首先我们应该了解一下 DNS 的层次结构，域名空间实际上是一个树状结构（大概像下图），在这个“树”中任何一个节点完整的域名都是从root到该节点路径上所有标签的逆序组合，或从该节点到root路径上所有标签的顺序组合，中间以”.”分隔。以本站首页域名为例，从”r2wind”到根域名”root”，所以该节点完整的域名则为”r2wind.cn.”（最后面的”.”代表 root，实际上是以”.”和一个空标签结尾的），但为了方便通常写成一个单独的”.”这种写法也被称为完全限定域名 (FQDN) 。 只不过平时在访问的时候，我们通常不会写成”r2wind.cn.”这种形式，而是直接写成”r2wind.cn”，但是在解析系统中这个点是不允许被省略的，不然可能会出现一些奇奇怪怪的问题，当然最重要的是要符合RFC的相关规范。  有关 RFC 的详细信息，可访问互联网工程工作组 (IETF) ...</div></div></div></a><a class="pagination-related" href="/articles/20220808.html" title="腾讯云免费 SSL 证书验证指引（DNS验证）"><img class="cover" src="https://resources.r2wind.cn/img/202208/mountains-7369438_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">腾讯云免费 SSL 证书验证指引（DNS验证）</div></div><div class="info-2"><div class="info-item-1">操作场景本文档将指导您申请腾讯云免费 SSL 证书且域名验证方式为 DNS 验证时，如何添加解析记录以完成域名验证。 前提条件本文档暂仅适用于解析托管在腾讯云 DNSPod 、阿里云、百度智能云、华为云、火山引擎的域名，后续将根据实际情况进行补充。 操作步骤获取验证记录1、登录证书管理控制台。2、找到状态为”验证中”的证书，如下图：3、点击”查看验证”进入”验证详情”页面，如下图：4、记录主机记录和记录值，验证完成前请不要关闭此页面。 添加解析记录 说明：1、请严格按照”证书验证详情”页面提示的主机记录、记录类型、记录值进行填写，记录类型和记录值直接复制粘贴对应输入框即可，请勿篡改。2、验证界面未涉及到的解析线路、TTL的内容请保持默认，不要自行修改。4、完成添加记录10分钟后返回到”验证详情”页面，点击”查看域名验证状态”。  DNSPod1、登录DNSPod 解析控制台，如下图：2、点击对应的域名，进入解析详情页面→点击”添加记录”，并按照”证书验证详情”页面提示的主机记录、记录类型、记录值进行填写选择，如下图：界面一：界面二：3、点击”确认”保存。 阿里云1、登录阿里云云解...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/articles/20211030.html" title="在DNSPod解析的域名如何设置DDNS(动态域名解析)"><img class="cover" src="https://resources.r2wind.cn/img/sea-164989_1280.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-30</div><div class="info-item-2">在DNSPod解析的域名如何设置DDNS(动态域名解析)</div></div><div class="info-2"><div class="info-item-1"> 本教程仅适用于解析托管在DNSPod平台上的域名，其他平台托管的域名请自行通过搜索引擎查找教程。   本教程前两个步骤通用，通过第三方插件或NAS&amp;路由器自带插件设置可参考前两步获取Token&amp;添加记录。   2022年2月15日：补充群晖设置教程  获取DNSPod Token1、打开并登录控制台-API密钥  注意这里一定要选择”DNSPod Token”而非”腾讯云API密钥”。  2、点击创建密钥，这里可能会进行安全验证，按照提示验证即可。3、设置密钥名称，这里根据需要随便填就好。4、记录密钥ID及Token  注意：Token仅在创建时展示一次，忘记的话请重新创建如果用于DDNS请不要设置IP白名单  添加解析记录1、打开并登录解析控制台2、找到对应的域名点击管理，这里以oed.im为例3、设置解析记录点击添加记录填写对应信息后点击保存完成添加。  主机记录：若直接解析主域名，请填@，若解析子域名，请填对应的值例如www。记录值：随便填一个IPv4，例如127.0.0.1(若使用IPv6,请随便填一个IPv6地址，例如fe80::0)记录类型：默认为A...</div></div></div></a><a class="pagination-related" href="/articles/20210803.html" title="如何将在腾讯企业邮箱在线购买&#x2F;赠送的域名过户到腾讯云并在腾讯云进行解析？"><img class="cover" src="https://resources.r2wind.cn/img/lake-5173683_1280.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-08-03</div><div class="info-item-2">如何将在腾讯企业邮箱在线购买&#x2F;赠送的域名过户到腾讯云并在腾讯云进行解析？</div></div><div class="info-2"><div class="info-item-1"> 其实企业邮箱是有给到过户教程的，但有的用户过户后会遇到一些问题，所以又在原基础上补充了一下2022年1月18日：由于企业邮箱已经全面融入企业微信，操作界面发生变化，故进行部分修改。  1、登录企业邮管理端-协作-邮件→前往配置，点击域名详情2、点击域名详情页面，点击“前往腾讯云”，腾讯云完成账号实名认证后，才可进行域名过户操作,若没有账号请在腾讯云页面点击立即注册  如果您之前已经注册腾讯云账户并完成账号实名认证可忽略这步  3、点击立即过户4、出现腾讯云登录入口页面，点击“登录”5、选择登录后，页面跳转至腾讯云登录入口，支持微信&#x2F;企业微信扫码、邮箱、QQ、公众号、小程序等方式登录6、登录后，系统将会自动操作，请耐心等待页面跳转至企业邮并提示过户成功。7、域名详情过户状态显示“已过户至腾讯云”  如果过户后发现解析控制台已经有刚刚过户的域名，那恭喜，您没有遇到问题。如果发现没有刚刚过户的域名，那请继续往下看  8、登录腾讯云控制台：域名注册，找到刚注册的域名并点击管理9、找到域名资料并进行修改，为什么要修改呢？因为你发现除了所有者之外其他信息都不是你的，所以需要进行更...</div></div></div></a><a class="pagination-related" href="/articles/20230806.html" title="DNS+HTTPDNS 实现 CNAME 展平 (CNAME Flattening)"><img class="cover" src="https://resources.r2wind.cn/img/202308/squirrel-8154277_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-08-06</div><div class="info-item-2">DNS+HTTPDNS 实现 CNAME 展平 (CNAME Flattening)</div></div><div class="info-2"><div class="info-item-1"> 本文将介绍如何使用 DNS (DNSPod) +HTTPDNS 实现 CNAME 展平 (CNAME Flattening)。一直以来，由于 CNAME 记录和任何记录冲突的独有特性，导致一旦在根域使用 CNAME 解析，将导致其他记录无法正常使用，影响 DS (DNSSEC)、MX (邮箱服务)、TXT (SPF、DKIM、DMARC、站长平台验证) 等记录的使用，进而影响依赖这些记录的相关服务（如括号内所示），而 CNAME 展平 (CNAME Flattening) 是解决这个问题的一种方法，但由于 DNSPod 本身不支持 CNAME 展平 (CNAME Flattening)，所以本文将介绍如何使用 DNS+HTTPDNS 通过 API 调用的方式实现 CNAME 展平 (CNAME Flattening)。   为确保能精准稳定的获取到 CDN 等厂商提供的 CNAME 记录所对应的解析 IP（调度结果），脚本需要使用 HTTPDNS 服务，HTTPDNS 服务可能产生对应的请求次数费用，具体费用请参考 HTTPDNS 计费说明。  前提条件 域名解析托管在 DNS...</div></div></div></a><a class="pagination-related" href="/articles/20220624.html" title="爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）"><img class="cover" src="https://resources.r2wind.cn/img/202206/hd-wallpaper-3625405_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-24</div><div class="info-item-2">爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）</div></div><div class="info-2"><div class="info-item-1"> DNSSEC对权威dns提供给递归DNS的解析数据来源进⾏认证，可有效保护权威DNS和Local DNS之间数据不被攻击篡改，确保解析结果的真实与可靠性。本文以域名解析托管在DNSPod为例，其他平台可参考本文或咨询对应平台客服。  前提条件 目前DNSPod DNS仅支持付费套餐（任意版本）使用DNSSEC，使用DNSSEC前请购买合适版本的解析套餐。  操作步骤开启并获取DNSSEC配置信息登录DNSPod解析管理控制台 进入详情域名页面单击需要设置DNSSEC的域名进入解析详情页面 开启DNSSEC在”域名设置”中找到DNSSEC并点击”立即启用” 获取配置信息在弹出的窗口中即可看到相关的配置信息（如下图），请根据提示的信息前往对应的域名注册商进行配置，配置完成后后点击”确定”即可，下文将介绍爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名配置方式  PS:在域名注册商配置完成后一定要回来点确定！！！  配置DNSSEC（DS）记录爱名网（22.cn）配置DS记录登录会员中心登录爱名网会员中心 进入域名详情在”我的域名”中单击需要...</div></div></div></a><a class="pagination-related" href="/articles/20221020.html" title="如何正确变更 DNSPod 解析套餐（降级场景）"><img class="cover" src="https://resources.r2wind.cn/img/202210/bridge-7504605_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-20</div><div class="info-item-2">如何正确变更 DNSPod 解析套餐（降级场景）</div></div><div class="info-2"><div class="info-item-1">操作场景本文将指导您如何完成 DNSPod 解析套餐的变更，适用于降级场景（将套餐由高版本改至低版本，如企业版更换为专业版）。 前提条件 拥有需变更套餐域名的管理权限。 已购买其他版本套餐，若降级至免费版本，请忽略。  操作步骤将域名 DNS 服务器更改为免费版本 说明：由于降级 DNS 套餐版本需要解绑当前套餐，解绑套餐后若域名 DNS 服务器仍为原套餐版本的 DNS 服务器地址将导致域名无法解析；且受各地运营商递归 DNS 缓存影响，即使在变更套餐后及时修改域名 DNS 服务器地址为当前版本套餐地址，也可能导致在 72 小时内出现解析异常等影响业务的情况。所以在变更套餐前请您将域名 DNS 服务器更换为免费版本，以确保降级套餐不会影响正常解析。  获取免费版本 DNS 服务器地址 登录腾讯云 DNSPod控制台。 单击 DNS解析，在我的域名页面点击需要变更套餐的域名。 进入后单击域名设置并点击查看免费版的 DNS 服务器。 记录免费版本 DNS 服务器并前往域名注册商将 DNS 服务器变更为免费版本。  更改域名 DNS 服务器域名在腾讯云若您为腾讯云平台注册域名，请登录腾...</div></div></div></a><a class="pagination-related" href="/articles/20220522.html" title="DNS+IGTM实现访问流量智能调度"><img class="cover" src="https://resources.r2wind.cn/img/202205/seascape-4636549_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-22</div><div class="info-item-2">DNS+IGTM实现访问流量智能调度</div></div><div class="info-2"><div class="info-item-1">操作场景智能全局流量管理（Intelligence Global Traffic Manager），简称IGTM，它可以帮助用户实现应用（例如：网页应用、直播、点播）的网络健康检查，并根据检测结果实现故障隔离和流量调度切换。也可根据用户地理位置或延迟实现流量的智能调度，从而实现各区域用户的就近接入。本文以通过DNS（IGTM）实现边缘节点智能调度为例进行演示。 适用场景需根据用户地理位置将流量调度到适合的边缘节点，并实现故障节点的自动剔除&amp;将流量分摊至不同的负载均衡节点，提升用户的访问体验的客户。 例如：CDN、直播、点播、手机（应用分发&#x2F;更新、系统升级等）、游戏（资源更新&#x2F;分发）、大型网站等。 场景需求描述： 说明：下述描述、图片仅为本案例中涉及到的相关场景、需求、节点分布，仅供参考，实际使用中请根据需要自行调整，或咨询您的客户经理获取专属方案。  场景描述 客户为提升全球用户访问体验，通过在全球各地域部署多台边缘节点的方式来提升用户访问速度和稳定性。  需求描述 根据客户地理位置或延迟返回不同地域的节点IP，并自动剔除故障边缘节点； 当自建CDN节...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">前提条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">操作步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E8%85%BE%E8%AE%AF%E4%BA%91-DNSPod-%E6%8E%A7%E5%88%B6%E5%8F%B0"><span class="toc-number">2.1.</span> <span class="toc-text">登录腾讯云 DNSPod 控制台</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.</span> <span class="toc-text">添加记录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0SPF%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.1.</span> <span class="toc-text">添加SPF记录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0DMARC%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.2.</span> <span class="toc-text">添加DMARC记录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0DKIM%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.3.</span> <span class="toc-text">添加DKIM记录</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E8%AE%B0%E5%BD%95%E6%98%AF%E5%90%A6%E7%94%9F%E6%95%88"><span class="toc-number">2.3.</span> <span class="toc-text">验证记录是否生效</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81SPF%E8%AE%B0%E5%BD%95%E6%98%AF%E5%90%A6%E7%94%9F%E6%95%88"><span class="toc-number">2.3.1.</span> <span class="toc-text">验证SPF记录是否生效</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81DMARC%E8%AE%B0%E5%BD%95%E6%98%AF%E5%90%A6%E7%94%9F%E6%95%88"><span class="toc-number">2.3.2.</span> <span class="toc-text">验证DMARC记录是否生效</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"><img src="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"/></a><div class="content"><a class="title" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</a><time datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2025-12-14T12:30:30.000Z" title="发表于 2025-12-14 20:30:30">2025-12-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"><img src="https://resources.r2wind.cn/img/202507/website.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"/></a><div class="content"><a class="title" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</a><time datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用宝塔面板部署一个属于自己的 DeepSeek"/></a><div class="content"><a class="title" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek">使用宝塔面板部署一个属于自己的 DeepSeek</a><time datetime="2025-02-03T04:35:22.000Z" title="发表于 2025-02-03 12:35:22">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板"><img src="https://resources.r2wind.cn/img/202412/winter-4680354_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在 istoreos 上部署宝塔面板"/></a><div class="content"><a class="title" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板">在 istoreos 上部署宝塔面板</a><time datetime="2024-12-26T02:58:56.000Z" title="发表于 2024-12-26 10:58:56">2024-12-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By 小泽</span><span class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></span></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>

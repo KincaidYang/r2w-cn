@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod） | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="DNSSEC对权威dns提供给递归DNS的解析数据来源进⾏认证，可有效保护权威DNS和Local DNS之间数据不被攻击篡改，确保解析结果的真实与可靠性。本文以域名解析托管在DNSPod为例，其他平台可参考本文或咨询对应平台客服。  前提条件 目前DNSPod DNS仅支持付费套餐（任意版本）使用DNSSEC，使用DNSSEC前请购买合适版本的解析套餐。  操作步骤开启并获取DNSSEC配置信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）">
+<meta property="og:url" content="https://r2wind.cn/articles/20220624.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="DNSSEC对权威dns提供给递归DNS的解析数据来源进⾏认证，可有效保护权威DNS和Local DNS之间数据不被攻击篡改，确保解析结果的真实与可靠性。本文以域名解析托管在DNSPod为例，其他平台可参考本文或咨询对应平台客服。  前提条件 目前DNSPod DNS仅支持付费套餐（任意版本）使用DNSSEC，使用DNSSEC前请购买合适版本的解析套餐。  操作步骤开启并获取DNSSEC配置信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202206/hd-wallpaper-3625405_1920.jpg">
+<meta property="article:published_time" content="2022-06-24T05:31:12.000Z">
+<meta property="article:modified_time" content="2022-06-24T05:31:12.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="AWS">
+<meta property="article:tag" content="DNSPod">
+<meta property="article:tag" content="GoogleDomains">
+<meta property="article:tag" content="HKDNR">
+<meta property="article:tag" content="Route53">
+<meta property="article:tag" content="作品集">
+<meta property="article:tag" content="域名">
+<meta property="article:tag" content="爱名网">
+<meta property="article:tag" content="腾讯云">
+<meta property="article:tag" content="解析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202206/hd-wallpaper-3625405_1920.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）",
+  "url": "https://r2wind.cn/articles/20220624.html",
+  "image": "https://resources.r2wind.cn/img/202206/hd-wallpaper-3625405_1920.jpg",
+  "datePublished": "2022-06-24T05:31:12.000Z",
+  "dateModified": "2022-06-24T05:31:12.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "小泽",
+      "url": "https://r2wind.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20220624.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MG9VW91X52"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MG9VW91X52')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MG9VW91X52', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div class="bg-animation" id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a><a class="nav-page-title" href="/"><span class="site-name">爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名开启DNSSEC（解析托管在DNSPod）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-06-24T05:31:12.000Z" title="发表于 2022-06-24 13:31:12">2022-06-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-06-24T05:31:12.000Z" title="更新于 2022-06-24 13:31:12">2022-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><blockquote>
+<p>DNSSEC对权威dns提供给递归DNS的解析数据来源进⾏认证，可有效保护权威DNS和Local DNS之间数据不被攻击篡改，确保解析结果的真实与可靠性。本文以域名解析托管在DNSPod为例，其他平台可参考本文或咨询对应平台客服。</p>
+</blockquote>
+<h2 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h2><blockquote>
+<p>目前DNSPod DNS仅支持付费套餐（任意版本）使用DNSSEC，使用DNSSEC前请购买合适版本的解析套餐。</p>
+</blockquote>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><h3 id="开启并获取DNSSEC配置信息"><a href="#开启并获取DNSSEC配置信息" class="headerlink" title="开启并获取DNSSEC配置信息"></a>开启并获取DNSSEC配置信息</h3><h4 id="登录DNSPod解析管理控制台"><a href="#登录DNSPod解析管理控制台" class="headerlink" title="登录DNSPod解析管理控制台"></a>登录DNSPod<a target="_blank" rel="noopener" href="https://console.dnspod.cn/dns/">解析管理控制台</a></h4><p><img src="https://resources.r2wind.cn/img/202206/20220624134658.png" alt="解析控制台"></p>
+<h4 id="进入详情域名页面"><a href="#进入详情域名页面" class="headerlink" title="进入详情域名页面"></a>进入详情域名页面</h4><p>单击需要设置DNSSEC的域名进入解析详情页面<br><img src="https://resources.r2wind.cn/img/202206/20220624135409.png" alt="详情页面"></p>
+<h4 id="开启DNSSEC"><a href="#开启DNSSEC" class="headerlink" title="开启DNSSEC"></a>开启DNSSEC</h4><p>在”域名设置”中找到DNSSEC并点击”立即启用”<br><img src="https://resources.r2wind.cn/img/202206/20220624135920.png" alt="开启DNSSEC"></p>
+<h4 id="获取配置信息"><a href="#获取配置信息" class="headerlink" title="获取配置信息"></a>获取配置信息</h4><p>在弹出的窗口中即可看到相关的配置信息（如下图），请根据提示的信息前往对应的域名注册商进行配置，配置完成后后点击”确定”即可，下文将介绍爱名网(22.cn)、HKDNR、GoogleDomains、AWSRoute53注册域名配置方式<br><img src="https://resources.r2wind.cn/img/202206/20220624140414.png" alt="配置信息"></p>
+<blockquote>
+<p>PS:在域名注册商配置完成后一定要回来点确定！！！</p>
+</blockquote>
+<h3 id="配置DNSSEC（DS）记录"><a href="#配置DNSSEC（DS）记录" class="headerlink" title="配置DNSSEC（DS）记录"></a>配置DNSSEC（DS）记录</h3><h4 id="爱名网（22-cn）配置DS记录"><a href="#爱名网（22-cn）配置DS记录" class="headerlink" title="爱名网（22.cn）配置DS记录"></a>爱名网（22.cn）配置DS记录</h4><h5 id="登录会员中心"><a href="#登录会员中心" class="headerlink" title="登录会员中心"></a>登录会员中心</h5><p>登录爱名网<a target="_blank" rel="noopener" href="https://i.22.cn/Domain/My/">会员中心</a></p>
+<h5 id="进入域名详情"><a href="#进入域名详情" class="headerlink" title="进入域名详情"></a>进入域名详情</h5><p>在”我的域名”中单击需要设置的域名进入域名详情<br><img src="https://resources.r2wind.cn/img/202206/20220624142320.png" alt="我的域名"></p>
+<h5 id="配置DS记录"><a href="#配置DS记录" class="headerlink" title="配置DS记录"></a>配置DS记录</h5><p>1、进入详情页面后点击DNSSEC管理后单击添加记录<br><img src="https://resources.r2wind.cn/img/202206/20220624142602.png" alt="DNSSEC管理"><br>2、在弹出的窗口中根据提示填写解析控制台的给出的配置信息，并点击”确认设置”保存即可<br><img src="https://resources.r2wind.cn/img/202206/20220624143052.png" alt="DS记录"></p>
+<blockquote>
+<p>PS:配置完成后记得回解析控制台点确定！！！</p>
+</blockquote>
+<h4 id="HKDNR配置DS记录"><a href="#HKDNR配置DS记录" class="headerlink" title="HKDNR配置DS记录"></a>HKDNR配置DS记录</h4><h5 id="登录域名管理"><a href="#登录域名管理" class="headerlink" title="登录域名管理"></a>登录域名管理</h5><p>登录HKDNR域名管理界面[<a target="_blank" rel="noopener" href="https://www.hkdnr.hk/apps/login?lang=cn%5D">https://www.hkdnr.hk/apps/login?lang=cn]</a></p>
+<h5 id="点击管理"><a href="#点击管理" class="headerlink" title="点击管理"></a>点击管理</h5><p><img src="https://resources.r2wind.cn/img/202206/20220624144930.png" alt="管理"></p>
+<h5 id="配置DS记录-1"><a href="#配置DS记录-1" class="headerlink" title="配置DS记录"></a>配置DS记录</h5><p>1、单击DNSSEC选项后的off<br><img src="https://resources.r2wind.cn/img/202206/20220624145709.png" alt="off"><br>2、在弹出的确认框中点击”YES”<br><img src="https://resources.r2wind.cn/img/202206/20220624145958.png" alt="YES"><br>3、根据解析控制台的配置信息及页面提示进行填写，Algorithm请选择13，Digest Type请选择2，填写完成后点击添加<br><img src="https://resources.r2wind.cn/img/202206/20220624151059.png" alt="添加"><br>4、勾选方格并点击”更新”<br><img src="https://resources.r2wind.cn/img/202206/20220624151307.png" alt="更新"><br>5、看到”Update Success”即表示已经成功</p>
+<blockquote>
+<p>PS:配置完成后记得回解析控制台点确定！！！</p>
+</blockquote>
+<h4 id="GoogleDomains配置DS记录"><a href="#GoogleDomains配置DS记录" class="headerlink" title="GoogleDomains配置DS记录"></a>GoogleDomains配置DS记录</h4><h5 id="登录到GoogleDomains"><a href="#登录到GoogleDomains" class="headerlink" title="登录到GoogleDomains"></a>登录到GoogleDomains</h5><p>登录到<a target="_blank" rel="noopener" href="https://domains.google.com/registrar/">GoogleDomains</a>并找到我的域名</p>
+<h5 id="进入域名详情-1"><a href="#进入域名详情-1" class="headerlink" title="进入域名详情"></a>进入域名详情</h5><p>找到需要设置的域名，点击管理进入域名详情界面<br><img src="https://resources.r2wind.cn/img/202206/20220624153217.png" alt="管理"></p>
+<h5 id="配置DS记录-2"><a href="#配置DS记录-2" class="headerlink" title="配置DS记录"></a>配置DS记录</h5><p>1、点击”DNS”，找到DNSSEC并点击管理记录<br><img src="https://resources.r2wind.cn/img/202206/20220624153548.png" alt="dns"><br>2、根据解析控制台的配置信息及页面提示进行填写，填写完成后点击保存<br><img src="https://resources.r2wind.cn/img/202206/20220624153849.png" alt="记录"></p>
+<blockquote>
+<p>PS:配置完成后记得回解析控制台点确定！！！</p>
+</blockquote>
+<h4 id="AWSRoute53配置DS记录"><a href="#AWSRoute53配置DS记录" class="headerlink" title="AWSRoute53配置DS记录"></a>AWSRoute53配置DS记录</h4><h5 id="登录Route53控制台"><a href="#登录Route53控制台" class="headerlink" title="登录Route53控制台"></a>登录Route53控制台</h5><p>登录Route53控制台(<a target="_blank" rel="noopener" href="https://us-east-1.console.aws.amazon.com/route53/home#DomainListing:)%E6%89%BE%E5%88%B0%E6%B3%A8%E5%86%8C%E5%9F%9F">https://us-east-1.console.aws.amazon.com/route53/home#DomainListing:)找到注册域</a></p>
+<h5 id="进入域名详情-2"><a href="#进入域名详情-2" class="headerlink" title="进入域名详情"></a>进入域名详情</h5><p>在注册域页面点击对应的域名进入详情页面<br><img src="https://resources.r2wind.cn/img/202206/20220624161350.png" alt="详情"></p>
+<h5 id="配置DS记录-3"><a href="#配置DS记录-3" class="headerlink" title="配置DS记录"></a>配置DS记录</h5><p>1、点击”管理密钥”配置DS记录<br><img src="https://resources.r2wind.cn/img/202206/20220624161924.png" alt="管理密钥"><br>2、在弹出的窗口处根据解析控制台的配置信息及页面提示进行填写，完成后点击添加即可<br><img src="https://resources.r2wind.cn/img/202206/20220624162722.png" alt="配置"></p>
+<blockquote>
+<p>PS:<br>1、添加后在未来几分钟仍然会显示已禁用，直到您收到通知邮件，请耐心等待。<br>2、配置完成后记得回解析控制台点确定！！！</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20220624.html">https://r2wind.cn/articles/20220624.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DNSPod/">DNSPod</a><a class="post-meta__tags" href="/tags/%E8%85%BE%E8%AE%AF%E4%BA%91/">腾讯云</a><a class="post-meta__tags" href="/tags/%E5%9F%9F%E5%90%8D/">域名</a><a class="post-meta__tags" href="/tags/%E8%A7%A3%E6%9E%90/">解析</a><a class="post-meta__tags" href="/tags/%E4%BD%9C%E5%93%81%E9%9B%86/">作品集</a><a class="post-meta__tags" href="/tags/%E7%88%B1%E5%90%8D%E7%BD%91/">爱名网</a><a class="post-meta__tags" href="/tags/HKDNR/">HKDNR</a><a class="post-meta__tags" href="/tags/GoogleDomains/">GoogleDomains</a><a class="post-meta__tags" href="/tags/Route53/">Route53</a><a class="post-meta__tags" href="/tags/AWS/">AWS</a></div><div class="post-share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202206/hd-wallpaper-3625405_1920.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/articles/20220730.html" title="Windows 接入使用DNSPod Public DNS（DoH方式）"><img class="cover" src="https://resources.r2wind.cn/img/202207/hd-wallpaper-7346532_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Windows 接入使用DNSPod Public DNS（DoH方式）</div></div><div class="info-2"><div class="info-item-1">操作场景本文档将指导您如何在Windows11系统接入DNSPod Public DNS （DoH方式）。  说明：本文档方式二也适用于Windows10和Windows server 2022系统，但设置界面与本文档描述可能存在差异  操作步骤获取配置信息 说明：若您使用公共解析 Public DNS 基础服务请跳过该步骤，专业版和基础服务区别请参见常见问题  1、登录DNSPod管理控制台，单击侧边栏【公共解析】→【我的配置】。2、在【使用专属配置】页签中即可获得DNS over HTTPS专属地址： 配置DNSPod公共解析（DoH）1、在开始菜单中打开【设置】，单击【网络和Internet】→【属性】。2、在属性页面中找到【DNS服务器分配】，单击右侧的【编辑】按钮。3、在弹出的【编辑网络DNS设置】窗口中选择手动，并开启IPv4配置。4、下面请根据实际情况选择方式一或方式二进行配置 方式一：1、在【编辑网络DNS设置】→【首选DNS】中填入1.12.34.56，在【DNS over HTTPS】选择【开(手动模板)】，在【DNS over HTTPS模板】填入上述步骤获...</div></div></div></a><a class="pagination-related" href="/articles/20220522.html" title="DNS+IGTM实现访问流量智能调度"><img class="cover" src="https://resources.r2wind.cn/img/202205/seascape-4636549_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">DNS+IGTM实现访问流量智能调度</div></div><div class="info-2"><div class="info-item-1">操作场景智能全局流量管理（Intelligence Global Traffic Manager），简称IGTM，它可以帮助用户实现应用（例如：网页应用、直播、点播）的网络健康检查，并根据检测结果实现故障隔离和流量调度切换。也可根据用户地理位置或延迟实现流量的智能调度，从而实现各区域用户的就近接入。本文以通过DNS（IGTM）实现边缘节点智能调度为例进行演示。 适用场景需根据用户地理位置将流量调度到适合的边缘节点，并实现故障节点的自动剔除&amp;将流量分摊至不同的负载均衡节点，提升用户的访问体验的客户。 例如：CDN、直播、点播、手机（应用分发&#x2F;更新、系统升级等）、游戏（资源更新&#x2F;分发）、大型网站等。 场景需求描述： 说明：下述描述、图片仅为本案例中涉及到的相关场景、需求、节点分布，仅供参考，实际使用中请根据需要自行调整，或咨询您的客户经理获取专属方案。  场景描述 客户为提升全球用户访问体验，通过在全球各地域部署多台边缘节点的方式来提升用户访问速度和稳定性。  需求描述 根据客户地理位置或延迟返回不同地域的节点IP，并自动剔除故障边缘节点； 当自建CDN节...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/articles/20211030.html" title="在DNSPod解析的域名如何设置DDNS(动态域名解析)"><img class="cover" src="https://resources.r2wind.cn/img/sea-164989_1280.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-30</div><div class="info-item-2">在DNSPod解析的域名如何设置DDNS(动态域名解析)</div></div><div class="info-2"><div class="info-item-1"> 本教程仅适用于解析托管在DNSPod平台上的域名，其他平台托管的域名请自行通过搜索引擎查找教程。   本教程前两个步骤通用，通过第三方插件或NAS&amp;路由器自带插件设置可参考前两步获取Token&amp;添加记录。   2022年2月15日：补充群晖设置教程  获取DNSPod Token1、打开并登录控制台-API密钥  注意这里一定要选择”DNSPod Token”而非”腾讯云API密钥”。  2、点击创建密钥，这里可能会进行安全验证，按照提示验证即可。3、设置密钥名称，这里根据需要随便填就好。4、记录密钥ID及Token  注意：Token仅在创建时展示一次，忘记的话请重新创建如果用于DDNS请不要设置IP白名单  添加解析记录1、打开并登录解析控制台2、找到对应的域名点击管理，这里以oed.im为例3、设置解析记录点击添加记录填写对应信息后点击保存完成添加。  主机记录：若直接解析主域名，请填@，若解析子域名，请填对应的值例如www。记录值：随便填一个IPv4，例如127.0.0.1(若使用IPv6,请随便填一个IPv6地址，例如fe80::0)记录类型：默认为A...</div></div></div></a><a class="pagination-related" href="/articles/20230108.html" title="使用 DNSPod 拉平 CNAME 记录（CDN 场景）"><img class="cover" src="https://resources.r2wind.cn/img/202301/clouds-7689828_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-08</div><div class="info-item-2">使用 DNSPod 拉平 CNAME 记录（CDN 场景）</div></div><div class="info-2"><div class="info-item-1"> 由于 CNAME 跟任何记录都冲突的特性，在根域（@）下添加 CNAME 记录指向 CDN（或其他服务）会导致 mx（邮箱记录）、TXT（一些站长验证）、DS 等常用记录冲突等且多级 CNAME 会导致解析性能下降等问题，所以拉平是一个很不错的解决方案。但目前 DNSPod 并没有提供拉平的功能，所以需要自己写脚本调用 API 实现。（本文以腾讯云 CDN 为例，但是其他 CDN 服务商也可以使用，替换脚本里面的 CNAME 域名即可。）PS：自2019年1月接触互联网行业以来一直在做运营相关的工作，本身也不是学计算机相关专业的，代码写的可能不是很好，欢迎大佬们指正。  操作场景本文将指导您如何使用 DNSPod 的 API 实现拉平 CNAME 记录，以解决相关记录冲突的问题。（以腾讯云 CDN 为例） 前提条件 域名解析托管在腾讯云 DNSPod。 域名已绑定企业版或更高版本套餐。  方法说明流程图实现的方法大体如上图所示，获取 CDN 在31个省份三大运营商的调度结果，然后将调度结果更新到 DNSPod 上。 相关说明 因本人海外访问全部由 Cloudflare 提供服务...</div></div></div></a><a class="pagination-related" href="/articles/20220215.html" title="群晖设置DDNS并实现腾讯云免费SSL证书的自动申请与部署"><img class="cover" src="https://resources.r2wind.cn/img/202202/tree-6792528_1280.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-02-15</div><div class="info-item-2">群晖设置DDNS并实现腾讯云免费SSL证书的自动申请与部署</div></div><div class="info-2"><div class="info-item-1"> 本教程仅适用于DSM7.0及以上版本且域名解析托管在腾讯云DNSPod的用户,DSM6.X用户请参考：在DNSPod解析的域名如何设置DDNS(动态域名解析)和群晖部署SSL证书实现HTTPS安全访问进行DDNS设置以及SSL证书部署。  2024年2月28日更新：由于腾讯云 SSL 的自动 DNS 验证需要完成 CAM 授权，请需要同步部署证书的用户在开启 DDNS 前前往腾讯云 SSL 证书控制台手动为你的域名申请免费证书，并选择自动 DNS 验证方式，并在弹出的窗口中完成 CAM 授权。否则将无法完成自动申请证书。PS：仅需要完成授权即可，授权后可以关闭SSL证书控制台页面，不需要真的申请一张证书。   获取腾讯云API密钥1、打开并登录控制台-API密钥  注意这里一定要选择”腾讯云API密钥”而非”DNSPod Token”。  2、点击新建密钥，这里可能会进行安全验证，按照提示验证即可。3、记录密钥SecretId及SecretKey 添加解析记录1、打开并登录解析控制台2、找到对应的域名点击管理，这里以oed.im为例3、设置解析记录点击添加记录填写对应信息后点击...</div></div></div></a><a class="pagination-related" href="/articles/20221020.html" title="如何正确变更 DNSPod 解析套餐（降级场景）"><img class="cover" src="https://resources.r2wind.cn/img/202210/bridge-7504605_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-10-20</div><div class="info-item-2">如何正确变更 DNSPod 解析套餐（降级场景）</div></div><div class="info-2"><div class="info-item-1">操作场景本文将指导您如何完成 DNSPod 解析套餐的变更，适用于降级场景（将套餐由高版本改至低版本，如企业版更换为专业版）。 前提条件 拥有需变更套餐域名的管理权限。 已购买其他版本套餐，若降级至免费版本，请忽略。  操作步骤将域名 DNS 服务器更改为免费版本 说明：由于降级 DNS 套餐版本需要解绑当前套餐，解绑套餐后若域名 DNS 服务器仍为原套餐版本的 DNS 服务器地址将导致域名无法解析；且受各地运营商递归 DNS 缓存影响，即使在变更套餐后及时修改域名 DNS 服务器地址为当前版本套餐地址，也可能导致在 72 小时内出现解析异常等影响业务的情况。所以在变更套餐前请您将域名 DNS 服务器更换为免费版本，以确保降级套餐不会影响正常解析。  获取免费版本 DNS 服务器地址 登录腾讯云 DNSPod控制台。 单击 DNS解析，在我的域名页面点击需要变更套餐的域名。 进入后单击域名设置并点击查看免费版的 DNS 服务器。 记录免费版本 DNS 服务器并前往域名注册商将 DNS 服务器变更为免费版本。  更改域名 DNS 服务器域名在腾讯云若您为腾讯云平台注册域名，请登录腾...</div></div></div></a><a class="pagination-related" href="/articles/20220522.html" title="DNS+IGTM实现访问流量智能调度"><img class="cover" src="https://resources.r2wind.cn/img/202205/seascape-4636549_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-22</div><div class="info-item-2">DNS+IGTM实现访问流量智能调度</div></div><div class="info-2"><div class="info-item-1">操作场景智能全局流量管理（Intelligence Global Traffic Manager），简称IGTM，它可以帮助用户实现应用（例如：网页应用、直播、点播）的网络健康检查，并根据检测结果实现故障隔离和流量调度切换。也可根据用户地理位置或延迟实现流量的智能调度，从而实现各区域用户的就近接入。本文以通过DNS（IGTM）实现边缘节点智能调度为例进行演示。 适用场景需根据用户地理位置将流量调度到适合的边缘节点，并实现故障节点的自动剔除&amp;将流量分摊至不同的负载均衡节点，提升用户的访问体验的客户。 例如：CDN、直播、点播、手机（应用分发&#x2F;更新、系统升级等）、游戏（资源更新&#x2F;分发）、大型网站等。 场景需求描述： 说明：下述描述、图片仅为本案例中涉及到的相关场景、需求、节点分布，仅供参考，实际使用中请根据需要自行调整，或咨询您的客户经理获取专属方案。  场景描述 客户为提升全球用户访问体验，通过在全球各地域部署多台边缘节点的方式来提升用户访问速度和稳定性。  需求描述 根据客户地理位置或延迟返回不同地域的节点IP，并自动剔除故障边缘节点； 当自建CDN节...</div></div></div></a><a class="pagination-related" href="/articles/20220810.html" title="腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案"><img class="cover" src="https://resources.r2wind.cn/img/202208/hohenzollern-7370477_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-10</div><div class="info-item-2">腾讯企业邮箱向 Gmail（谷歌邮箱）发送邮件被退回（550 5.7.26）问题的解决方案</div></div><div class="info-2"><div class="info-item-1">2024年4月27日更新：基于谷歌最新的投递建议，需同时配置 spf 、dmarc 、dkim 三种记录，本文做部分更新   近期有小伙伴反应使用腾讯企业邮箱向 Gmail 发送邮件遇到被退回的情况，退信提示中包含：550 5.7.26，协助排查了几个case，发现原因基本都是没有添加SPF记录导致的，下面给大家分享一下排查解决方案：  前提条件本教程仅适用于使用腾讯云企业邮箱且域名托管在腾讯云 DNSPod 的用户，若您域名托管在其他服务商，此教程仅可做部分参考： 操作步骤登录腾讯云 DNSPod 控制台1、登录 DNSPod 解析控制台，如下图所示：2、点击对应的域名进入记录详情页面，如下图所示： 添加记录添加SPF记录 说明：  发件人策略框架 SPF(Sender Policy Framework)：可用于指定发送邮件的服务器，是一种广泛部署且非常高效的垃圾邮件解决方案。 SPF记录对于新手来讲整体较为复杂，不建议大家自行编写添加，请使用企业邮箱提供的模板添加。记录内容：主机记录：@记录类型：选择TXT和SPF均可，建议选择TXT（SPF记录是TXT记录的一种特殊形式）记...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">前提条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">2.</span> <span class="toc-text">操作步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E5%B9%B6%E8%8E%B7%E5%8F%96DNSSEC%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-number">2.1.</span> <span class="toc-text">开启并获取DNSSEC配置信息</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%99%BB%E5%BD%95DNSPod%E8%A7%A3%E6%9E%90%E7%AE%A1%E7%90%86%E6%8E%A7%E5%88%B6%E5%8F%B0"><span class="toc-number">2.1.1.</span> <span class="toc-text">登录DNSPod解析管理控制台</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E8%AF%A6%E6%83%85%E5%9F%9F%E5%90%8D%E9%A1%B5%E9%9D%A2"><span class="toc-number">2.1.2.</span> <span class="toc-text">进入详情域名页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E5%90%AFDNSSEC"><span class="toc-number">2.1.3.</span> <span class="toc-text">开启DNSSEC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-number">2.1.4.</span> <span class="toc-text">获取配置信息</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEDNSSEC%EF%BC%88DS%EF%BC%89%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.</span> <span class="toc-text">配置DNSSEC（DS）记录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B1%E5%90%8D%E7%BD%91%EF%BC%8822-cn%EF%BC%89%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.1.</span> <span class="toc-text">爱名网（22.cn）配置DS记录</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E4%BC%9A%E5%91%98%E4%B8%AD%E5%BF%83"><span class="toc-number">2.2.1.1.</span> <span class="toc-text">登录会员中心</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E5%9F%9F%E5%90%8D%E8%AF%A6%E6%83%85"><span class="toc-number">2.2.1.2.</span> <span class="toc-text">进入域名详情</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.1.3.</span> <span class="toc-text">配置DS记录</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HKDNR%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.2.</span> <span class="toc-text">HKDNR配置DS记录</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E5%9F%9F%E5%90%8D%E7%AE%A1%E7%90%86"><span class="toc-number">2.2.2.1.</span> <span class="toc-text">登录域名管理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%82%B9%E5%87%BB%E7%AE%A1%E7%90%86"><span class="toc-number">2.2.2.2.</span> <span class="toc-text">点击管理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95-1"><span class="toc-number">2.2.2.3.</span> <span class="toc-text">配置DS记录</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GoogleDomains%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.3.</span> <span class="toc-text">GoogleDomains配置DS记录</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E5%88%B0GoogleDomains"><span class="toc-number">2.2.3.1.</span> <span class="toc-text">登录到GoogleDomains</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E5%9F%9F%E5%90%8D%E8%AF%A6%E6%83%85-1"><span class="toc-number">2.2.3.2.</span> <span class="toc-text">进入域名详情</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95-2"><span class="toc-number">2.2.3.3.</span> <span class="toc-text">配置DS记录</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AWSRoute53%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.4.</span> <span class="toc-text">AWSRoute53配置DS记录</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%99%BB%E5%BD%95Route53%E6%8E%A7%E5%88%B6%E5%8F%B0"><span class="toc-number">2.2.4.1.</span> <span class="toc-text">登录Route53控制台</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E5%9F%9F%E5%90%8D%E8%AF%A6%E6%83%85-2"><span class="toc-number">2.2.4.2.</span> <span class="toc-text">进入域名详情</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEDS%E8%AE%B0%E5%BD%95-3"><span class="toc-number">2.2.4.3.</span> <span class="toc-text">配置DS记录</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"><img src="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"/></a><div class="content"><a class="title" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</a><time datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2025-12-14T12:30:30.000Z" title="发表于 2025-12-14 20:30:30">2025-12-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"><img src="https://resources.r2wind.cn/img/202507/website.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"/></a><div class="content"><a class="title" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</a><time datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用宝塔面板部署一个属于自己的 DeepSeek"/></a><div class="content"><a class="title" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek">使用宝塔面板部署一个属于自己的 DeepSeek</a><time datetime="2025-02-03T04:35:22.000Z" title="发表于 2025-02-03 12:35:22">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板"><img src="https://resources.r2wind.cn/img/202412/winter-4680354_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在 istoreos 上部署宝塔面板"/></a><div class="content"><a class="title" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板">在 istoreos 上部署宝塔面板</a><time datetime="2024-12-26T02:58:56.000Z" title="发表于 2024-12-26 10:58:56">2024-12-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By 小泽</span><span class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></span></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>

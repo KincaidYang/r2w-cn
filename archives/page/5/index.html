@@ -1,0 +1,245 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>归档 | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一个自由自在的互联网民工">
+<meta property="og:type" content="website">
+<meta property="og:title" content="归档">
+<meta property="og:url" content="https://r2wind.cn/archives/page/5/index.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="一个自由自在的互联网民工">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/avator.jpg">
+<meta property="article:author" content="小泽">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/avator.jpg"><script type="application/ld+json"></script><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/archives/page/5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MG9VW91X52"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MG9VW91X52')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MG9VW91X52', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '归档',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'archive'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div class="bg-animation" id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="page" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">归档</h1></header><main class="layout" id="content-inner"><div id="archive"><div class="article-sort-title">全部文章 - 57</div><div class="article-sort"><div class="article-sort-item year">2021</div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20211030.html" title="在DNSPod解析的域名如何设置DDNS(动态域名解析)"><img src="https://resources.r2wind.cn/img/sea-164989_1280.jpg" alt="在DNSPod解析的域名如何设置DDNS(动态域名解析)" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-10-30T03:52:52.000Z" title="发表于 2021-10-30 11:52:52">2021-10-30</time></div><a class="article-sort-item-title" href="/articles/20211030.html" title="在DNSPod解析的域名如何设置DDNS(动态域名解析)">在DNSPod解析的域名如何设置DDNS(动态域名解析)</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20211017.html" title="腾讯待办-入门教程"><img src="https://resources.r2wind.cn/img/flower-5189902_1920.jpg" alt="腾讯待办-入门教程" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-10-17T02:00:00.000Z" title="发表于 2021-10-17 10:00:00">2021-10-17</time></div><a class="article-sort-item-title" href="/articles/20211017.html" title="腾讯待办-入门教程">腾讯待办-入门教程</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210911.html" title="腾讯待办-一款待办事项和日程管理的效率工具"><img src="https://resources.r2wind.cn/img/ocean-3605547_1280.jpg" alt="腾讯待办-一款待办事项和日程管理的效率工具" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-09-11T02:00:00.000Z" title="发表于 2021-09-11 10:00:00">2021-09-11</time></div><a class="article-sort-item-title" href="/articles/20210911.html" title="腾讯待办-一款待办事项和日程管理的效率工具">腾讯待办-一款待办事项和日程管理的效率工具</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210809.html" title="DNS解析出现问题怎么办？"><img src="https://resources.r2wind.cn/img/mountain-6320288_1280.jpg" alt="DNS解析出现问题怎么办？" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-08-09T23:36:52.000Z" title="发表于 2021-08-10 07:36:52">2021-08-10</time></div><a class="article-sort-item-title" href="/articles/20210809.html" title="DNS解析出现问题怎么办？">DNS解析出现问题怎么办？</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210803.html" title="如何将在腾讯企业邮箱在线购买/赠送的域名过户到腾讯云并在腾讯云进行解析？"><img src="https://resources.r2wind.cn/img/lake-5173683_1280.jpg" alt="如何将在腾讯企业邮箱在线购买/赠送的域名过户到腾讯云并在腾讯云进行解析？" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-08-03T09:52:52.000Z" title="发表于 2021-08-03 17:52:52">2021-08-03</time></div><a class="article-sort-item-title" href="/articles/20210803.html" title="如何将在腾讯企业邮箱在线购买/赠送的域名过户到腾讯云并在腾讯云进行解析？">如何将在腾讯企业邮箱在线购买/赠送的域名过户到腾讯云并在腾讯云进行解析？</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210704.html" title="在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？"><img src="https://resources.r2wind.cn/img/mountains-6277391_1280.jpg" alt="在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-07-04T11:16:55.000Z" title="发表于 2021-07-04 19:16:55">2021-07-04</time></div><a class="article-sort-item-title" href="/articles/20210704.html" title="在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？">在腾讯云（DNSPod）如何对域名进行批量操作，你知道嘛？</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210617.html" title="DNSPod出品的DoH客户端，一键为电脑打开DoH服务"><img src="https://resources.r2wind.cn/img/sunset-404072_1280.jpg" alt="DNSPod出品的DoH客户端，一键为电脑打开DoH服务" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-06-17T13:52:52.000Z" title="发表于 2021-06-17 21:52:52">2021-06-17</time></div><a class="article-sort-item-title" href="/articles/20210617.html" title="DNSPod出品的DoH客户端，一键为电脑打开DoH服务">DNSPod出品的DoH客户端，一键为电脑打开DoH服务</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210428.html" title="电信网络反诈宣传"><img src="https://resources.r2wind.cn/img/beach-5722568_1280.jpg" alt="电信网络反诈宣传" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-04-28T02:52:52.000Z" title="发表于 2021-04-28 10:52:52">2021-04-28</time></div><a class="article-sort-item-title" href="/articles/20210428.html" title="电信网络反诈宣传">电信网络反诈宣传</a></div></div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20210313.html" title="《文案创作完全手册》第一章"><img src="https://resources.r2wind.cn/img/landscape-5538015_1280.jpg" alt="《文案创作完全手册》第一章" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2021-03-13T12:52:52.000Z" title="发表于 2021-03-13 20:52:52">2021-03-13</time></div><a class="article-sort-item-title" href="/articles/20210313.html" title="《文案创作完全手册》第一章">《文案创作完全手册》第一章</a></div></div><div class="article-sort-item year">2020</div><div class="article-sort-item"><a class="article-sort-item-img" href="/articles/20201201.html" title="本站已经支持IPv6+IPv4双栈访问"><img src="https://resources.r2wind.cn/img/mountains-3048299_1280.jpg" alt="本站已经支持IPv6+IPv4双栈访问" onerror="this.onerror=null;this.src='/img/404.jpg'"></a><div class="article-sort-item-info"><div class="article-sort-item-time"><i class="far fa-calendar-alt"></i><time class="post-meta-date-created" datetime="2020-12-01T12:52:52.000Z" title="发表于 2020-12-01 20:52:52">2020-12-01</time></div><a class="article-sort-item-title" href="/articles/20201201.html" title="本站已经支持IPv6+IPv4双栈访问">本站已经支持IPv6+IPv4双栈访问</a></div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/archives/page/4/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/archives/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/archives/page/6/">6</a><a class="extend next" rel="next" href="/archives/page/6/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"><img src="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"/></a><div class="content"><a class="title" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</a><time datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2025-12-14T12:30:30.000Z" title="发表于 2025-12-14 20:30:30">2025-12-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"><img src="https://resources.r2wind.cn/img/202507/website.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"/></a><div class="content"><a class="title" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</a><time datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用宝塔面板部署一个属于自己的 DeepSeek"/></a><div class="content"><a class="title" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek">使用宝塔面板部署一个属于自己的 DeepSeek</a><time datetime="2025-02-03T04:35:22.000Z" title="发表于 2025-02-03 12:35:22">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板"><img src="https://resources.r2wind.cn/img/202412/winter-4680354_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在 istoreos 上部署宝塔面板"/></a><div class="content"><a class="title" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板">在 istoreos 上部署宝塔面板</a><time datetime="2024-12-26T02:58:56.000Z" title="发表于 2024-12-26 10:58:56">2024-12-26</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>分类</span>
+            <a class="card-more-btn" href="/categories/" title="查看更多">
+      <i class="fas fa-angle-right"></i></a>
+          </div>
+          <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%85%AC%E5%91%8A/"><span class="card-category-list-name">公告</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0/"><span class="card-category-list-name">学习</span><span class="card-category-list-count">4</span></a><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E6%96%87%E6%A1%88/"><span class="card-category-list-name">文案</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0/%E7%A4%BE%E7%BE%A4/"><span class="card-category-list-name">社群</span><span class="card-category-list-count">2</span></a></li></ul></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E5%AE%9E%E7%94%A8%E5%B7%A5%E5%85%B7/"><span class="card-category-list-name">实用工具</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%95%99%E7%A8%8B/"><span class="card-category-list-name">教程</span><span class="card-category-list-count">41</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E6%97%A5%E8%AE%B0/"><span class="card-category-list-name">日记</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/%E7%A4%BE%E7%BE%A4/"><span class="card-category-list-name">社群</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/web%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 1.1em; color: #999">web服务器</a> <a href="/tags/IGTM/" style="font-size: 1.1em; color: #999">IGTM</a> <a href="/tags/%E5%8D%8E%E4%B8%BA%E4%BA%91/" style="font-size: 1.1em; color: #999">华为云</a> <a href="/tags/%E5%AD%A6%E4%B9%A0/" style="font-size: 1.15em; color: #999b9e">学习</a> <a href="/tags/%E7%BE%A4%E6%99%96/" style="font-size: 1.2em; color: #999da3">群晖</a> <a href="/tags/DNSPOD/" style="font-size: 1.1em; color: #999">DNSPOD</a> <a href="/tags/BuyVM/" style="font-size: 1.1em; color: #999">BuyVM</a> <a href="/tags/%E9%A3%9E%E7%89%9B/" style="font-size: 1.1em; color: #999">飞牛</a> <a href="/tags/AI%E7%BC%96%E7%A8%8B/" style="font-size: 1.1em; color: #999">AI编程</a> <a href="/tags/Nginx/" style="font-size: 1.25em; color: #999fa7">Nginx</a> <a href="/tags/AWS/" style="font-size: 1.1em; color: #999">AWS</a> <a href="/tags/%E8%85%BE%E8%AE%AF%E4%BA%91%E5%BB%BA%E7%AB%99-CloudPages/" style="font-size: 1.1em; color: #999">腾讯云建站 CloudPages</a> <a href="/tags/Caddy/" style="font-size: 1.1em; color: #999">Caddy</a> <a href="/tags/%E7%A4%BE%E7%BE%A4/" style="font-size: 1.2em; color: #999da3">社群</a> <a href="/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" style="font-size: 1.1em; color: #999">开发工具</a> <a href="/tags/HKDNR/" style="font-size: 1.1em; color: #999">HKDNR</a> <a href="/tags/%E4%BD%9C%E5%93%81%E9%9B%86/" style="font-size: 1.35em; color: #99a3b1">作品集</a> <a href="/tags/BGP/" style="font-size: 1.1em; color: #999">BGP</a> <a href="/tags/GoogleDomains/" style="font-size: 1.1em; color: #999">GoogleDomains</a> <a href="/tags/%E6%96%87%E6%A1%88/" style="font-size: 1.1em; color: #999">文案</a> <a href="/tags/%E8%85%BE%E8%AE%AF%E4%BA%91/" style="font-size: 1.45em; color: #99a7ba">腾讯云</a> <a href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F%E6%9E%84%E5%BB%BA/" style="font-size: 1.1em; color: #999">云原生构建</a> <a href="/tags/AS/" style="font-size: 1.1em; color: #999">AS</a> <a href="/tags/%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF/" style="font-size: 1.25em; color: #999fa7">宝塔面板</a> <a href="/tags/%E8%AF%81%E4%B9%A6/" style="font-size: 1.15em; color: #999b9e">证书</a> <a href="/tags/AnyCast/" style="font-size: 1.1em; color: #999">AnyCast</a> <a href="/tags/%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1/" style="font-size: 1.15em; color: #999b9e">企业邮箱</a> <a href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/" style="font-size: 1.2em; color: #999da3">效率工具</a> <a href="/tags/CodeBuddy/" style="font-size: 1.1em; color: #999">CodeBuddy</a> <a href="/tags/%E8%A7%A3%E6%9E%90/" style="font-size: 1.4em; color: #99a5b6">解析</a> <a href="/tags/DNSPod/" style="font-size: 1.5em; color: #99a9bf">DNSPod</a> <a href="/tags/DoH/" style="font-size: 1.15em; color: #999b9e">DoH</a> <a href="/tags/%E8%85%BE%E8%AE%AF%E5%BE%85%E5%8A%9E/" style="font-size: 1.15em; color: #999b9e">腾讯待办</a> <a href="/tags/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1/" style="font-size: 1.1em; color: #999">企业微信</a> <a href="/tags/%E7%88%B1%E5%90%8D%E7%BD%91/" style="font-size: 1.1em; color: #999">爱名网</a> <a href="/tags/Route53/" style="font-size: 1.1em; color: #999">Route53</a> <a href="/tags/SSL/" style="font-size: 1.3em; color: #99a1ac">SSL</a> <a href="/tags/%E5%8A%A0%E5%AF%86DNS/" style="font-size: 1.15em; color: #999b9e">加密DNS</a> <a href="/tags/CNB/" style="font-size: 1.1em; color: #999">CNB</a> <a href="/tags/NAS/" style="font-size: 1.2em; color: #999da3">NAS</a></div></div><div class="card-widget card-archives">
+    <div class="item-headline">
+      <i class="fas fa-archive"></i>
+      <span>归档</span>
+      <a class="card-more-btn" href="/archives/"
+            title="查看更多">
+            <i class="fas fa-angle-right"></i>
+          </a>
+    </div>
+  
+    <ul class="card-archive-list">
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/12/">
+            <span class="card-archive-list-date">
+              十二月 2025
+            </span>
+            <span class="card-archive-list-count">2</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/07/">
+            <span class="card-archive-list-date">
+              七月 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2025/02/">
+            <span class="card-archive-list-date">
+              二月 2025
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/12/">
+            <span class="card-archive-list-date">
+              十二月 2024
+            </span>
+            <span class="card-archive-list-count">3</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/10/">
+            <span class="card-archive-list-date">
+              十月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/03/">
+            <span class="card-archive-list-date">
+              三月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/02/">
+            <span class="card-archive-list-date">
+              二月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+        <li class="card-archive-list-item">
+          <a class="card-archive-list-link" href="/archives/2024/01/">
+            <span class="card-archive-list-date">
+              一月 2024
+            </span>
+            <span class="card-archive-list-count">1</span>
+          </a>
+        </li>
+      
+    </ul>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">57</div></div><div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2017-04-15T21:59:20.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-12-20T06:45:19.638Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By 小泽</span><span class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></span></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了 | 归去如风</title><meta name="author" content="小泽"><meta name="copyright" content="小泽"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="以前一直觉得证书续签这件事挺简单的，我们用各种 acme 客户端去申请证书，证书有效期 90 天，提前一点时间 acme 客户端会自动帮我们续掉，可以说什么时候续大家（包括acme客户端）心里都有数的，但刚刚却被惊出一身冷汗。最近开始折腾 IP HTTPS 证书还写了一篇教程，大概讲的是如何用acme.sh申请IP证书自动续签并给宝塔面板部署，本来想去查看一下 acme.sh 的配置文件写的证书部">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">
+<meta property="og:url" content="https://r2wind.cn/articles/20251220.html">
+<meta property="og:site_name" content="归去如风">
+<meta property="og:description" content="以前一直觉得证书续签这件事挺简单的，我们用各种 acme 客户端去申请证书，证书有效期 90 天，提前一点时间 acme 客户端会自动帮我们续掉，可以说什么时候续大家（包括acme客户端）心里都有数的，但刚刚却被惊出一身冷汗。最近开始折腾 IP HTTPS 证书还写了一篇教程，大概讲的是如何用acme.sh申请IP证书自动续签并给宝塔面板部署，本来想去查看一下 acme.sh 的配置文件写的证书部">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg">
+<meta property="article:published_time" content="2025-12-20T06:08:02.000Z">
+<meta property="article:modified_time" content="2025-12-20T06:08:02.000Z">
+<meta property="article:author" content="小泽">
+<meta property="article:tag" content="证书">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了",
+  "url": "https://r2wind.cn/articles/20251220.html",
+  "image": "https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg",
+  "datePublished": "2025-12-20T06:08:02.000Z",
+  "dateModified": "2025-12-20T06:08:02.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "小泽",
+      "url": "https://r2wind.cn"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://resources.r2wind.cn/img/logo.ico"><link rel="canonical" href="https://r2wind.cn/articles/20251220.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//www.google-analytics.com" crossorigin=""/><meta/><meta/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-MG9VW91X52"></script><script>window.dataLayer = window.dataLayer || []
+function gtag(){dataLayer.push(arguments)}
+gtag('js', new Date())
+gtag('config', 'G-MG9VW91X52')
+btf.addGlobalFn('pjaxComplete', () => {
+  gtag('config', 'G-MG9VW91X52', {'page_path': window.location.pathname})
+}, 'google_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://mirrors.r2wind.cn/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://fonts.r2wind.cn/fonts.css"><script src="https://tam.cdn-go.cn/aegis-sdk/latest/aegis.min.js"></script><script src="https://resources.r2wind.cn/js/rum.js"></script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/atom.xml" title="归去如风" type="application/atom+xml">
+</head><body><div class="bg-animation" id="web_bg" style="background-image: url(https://resources.r2wind.cn/background.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">归去如风</span></a><a class="nav-page-title" href="/"><span class="site-name">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/Gallery"><i class="fa-fw fa fa-image"></i><span> 相册</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/friends/"><i class="fa-fw fas fa-thumbs-up"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-language"></i><span> 语言</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://yjz.hk"><span> 繁體中文</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://r2wind.com"><span> English</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-20T06:08:02.000Z" title="更新于 2025-12-20 14:08:02">2025-12-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>以前一直觉得证书续签这件事挺简单的，我们用各种 acme 客户端去申请证书，证书有效期 90 天，提前一点时间 acme 客户端会自动帮我们续掉，可以说什么时候续大家（包括acme客户端）心里都有数的，但刚刚却被惊出一身冷汗。<br>最近开始折腾 IP HTTPS 证书还写了一篇教程，大概讲的是如何用acme.sh申请IP证书自动续签并给宝塔面板部署，本来想去查看一下 acme.sh 的配置文件写的证书部署命令有没有错误（因为最开始我把证书文件和私钥文件的路径写反了），结果一看 .conf 里却写了个：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Le_NextRenewTimeStr=&#x27;2026-02-17T02:06:43Z&#x27;</span><br></pre></td></tr></table></figure>
+<p><img src="https://resources.r2wind.cn/img/202512/acme-conf.png" alt="acme.sh conf"><br>说人话，就是差不多等到60天后再续期，但是众所周不知，IP 证书的有效期只有 7 天，如果 60 天后再续期的话黄花菜都已经凉了，本来我以为工具计算错误了，后面看了代码：<br><img src="https://resources.r2wind.cn/img/202512/code-1.png" alt="acme.sh code-1"><br><img src="https://resources.r2wind.cn/img/202512/code-2.png" alt="acme.sh code-2"><br>我才意识到一件事，原来他根本没算，上面代码意思也很简单，默认续期时间是60天，如果你自己不指定或者传参错误，那程序就直接用默认的60天，也就是说不是工具写错了，而是这套“自己算时间”的逻辑，已经跟不上证书有效期逐步缩短的时代了，这也是 ARI 出现的背景。</p>
+<h2 id="ACME-一开始，根本没定义「什么时候续」"><a href="#ACME-一开始，根本没定义「什么时候续」" class="headerlink" title="ACME 一开始，根本没定义「什么时候续」"></a>ACME 一开始，根本没定义「什么时候续」</h2><p>想要了解清楚整个背景，还要看一下 ACME（全称：Automated Certificate Management Environment） 这个协议本身，如果我们把时间拨回到 ACME 刚被标准化的时候，会发现一件挺有意思的事，ACME从一开始解决的目标就非常克制、也非常工程化。在核心规范 RFC 8555 里，协议关心的只有三件事：</p>
+<ul>
+<li>你怎么证明你控制了这个标识符—— 域名、IP，或者其他资源</li>
+<li>CA 如何基于这个证明给你签发证书</li>
+<li>证书到期后，如何再次完成签发流程</li>
+</ul>
+<p><img src="https://resources.r2wind.cn/img/202512/rfc8555.png" alt="RFC 8555"></p>
+<p>在这里突然想起了一句台词，我来鹅城只办三件事：公平！公平！还是公平！！！<br>所以如果你去翻 RFC 8555 的正文，会发现它对下面这些内容写得非常详细：</p>
+<ul>
+<li>challenge &#x2F; response 的流程</li>
+<li>order、authorization、certificate 的状态机（听到状态机这个词是不是很懵圈：简单来说一件事在不同阶段，只允许做特定动作，就比如你打游戏新手村还没过，就不能去刷副本）</li>
+<li>如何撤销证书、如何重新下单</li>
+</ul>
+<p>但有一个问题，在整个规范里几乎没有被正面定义，那就是证书“应该在什么时候续签”？RFC 8555 并没有给出类似：</p>
+<ul>
+<li>“建议在证书有效期剩余 X% 时续签”</li>
+<li>“CA 会告知客户端续签时间窗口”</li>
+</ul>
+<p>相反，规范的态度非常明确：</p>
+<ul>
+<li>ACME 只负责“能不能签”，</li>
+<li>不负责“什么时候签”。</li>
+</ul>
+<p>换句话来说，协议定义的是能力，而不是「策略」，举个更通俗的例子：这像不像长辈或者领导常说的那句：“这个东西，你心里有数就行。”</p>
+<p>目标是明确的，但什么时候该跟进、什么时候该收尾、什么时候算做到位，全都没明说，只能靠你自己判断节奏。</p>
+<p>这也就意味着，从 ACME 诞生的第一天起：“续签时机”就被默认成了客户端自己的责任。</p>
+<p>于是，几乎所有 ACME 客户端——无论是 acme.sh、certbot，还是后来的各种实现——都只能自己设计续签策略，因为 ACME 申请下来的证书基本是都是90天的，所以大家最后都走向了同一套经验规则：</p>
+<ul>
+<li>证书有效期 90 天</li>
+<li>剩余 30～60 天时续签</li>
+<li>cron 每天跑，等时间到了再说</li>
+</ul>
+<p>以宝塔面板为例，最开始给 Let’s 证书的续签策略是等到第 60 天的时候尝试续期（不过大家放心：随着 CA&#x2F;B 宣布将证书有效期逐步缩短到 47 天之后，我们调整成了剩余时间不足三分之一的时候就开始尝试续签新的证书）<br>在 90 天证书的世界里，这套逻辑非常稳定，几乎没人觉得有问题，但问题来了。</p>
+<h2 id="短期证书一出现，这套逻辑开始失灵"><a href="#短期证书一出现，这套逻辑开始失灵" class="headerlink" title="短期证书一出现，这套逻辑开始失灵"></a>短期证书一出现，这套逻辑开始失灵</h2><p>使这套逻辑被打破的原因大概可以归纳为一点，那就是证书有效期逐步缩短到47天，这也从某种角度催化出了短期证书（short-lived certificate）成为了一套正式方案，或者说不得不用的方案（你想通过 ACME 客户端申请免费的 IP 证书，你只能用这套方案）<br>以 Let’s Encrypt 为例：</p>
+<ul>
+<li>IP 证书只能走 short-lived profile</li>
+<li>有效期最长只有 160 小时</li>
+<li>必须全自动续签，不能靠人记（其实也不是不可以，如果你不嫌麻烦）</li>
+</ul>
+<p>那么问题来了，ACME 客户端看到的是什么？准确的来说应该是想的是什么？</p>
+<blockquote>
+<p>哦豁～我又申请下来了一张证书，我来算一下什么时候续期，既然用户没有指定续期时间，那就等60天之后再续期吧，嘿嘿～</p>
+</blockquote>
+<p>但是他不想知道或者并不知道：</p>
+<ul>
+<li>这是一张 IP 证书</li>
+<li>这张证书有效期不到 7 天</li>
+<li>给我颁发这张证书的 CA 希望我在什么时间续期这张证书</li>
+</ul>
+<p>于是就出现了今天早上吓的我直冒冷汗的事情，一张有效期不足 7 天的证书，续期时间居然是 60 天以后，看起来好像是个 bug ，但时代变了。其实 acme.sh 是手动可以指定续期时间的，你只需要手动加一下参数就好：<br><img src="https://resources.r2wind.cn/img/202512/acme-renew-param.png" alt="acme.sh renew param"></p>
+<p>那这时候聪明的你一定想到，如果有个机制可以告诉 ACME 客户端，这张证书应该在什么时间来续签不就好了，那么恭喜你，发明了 ARI (ACME Renewal Information)</p>
+<h2 id="ARI-是干嘛的？一句话就够了"><a href="#ARI-是干嘛的？一句话就够了" class="headerlink" title="ARI 是干嘛的？一句话就够了"></a>ARI 是干嘛的？一句话就够了</h2><p>ARI &#x3D; ACME Renewal Information，不过它并不是某个客户端实现里的“新功能”，而是 ACME 协议在后续规范中新增的一项正式扩展能力，来解决客户端不知道应该在什么时候续期证书的问题。<br>ARI 由 IETF 在 RFC 9773 中引入，用于解决一个 ACME 长期存在、但此前从未被标准化的问题：续签时间的信息，应该如何由 CA 传达给客户端。<br><img src="https://resources.r2wind.cn/img/202512/rfc9773.png" alt="RFC 9773"><br>在 ARI 出现之前：</p>
+<ul>
+<li>ACME 协议并没有定义任何“续签建议”的表达方式</li>
+<li>客户端只能基于证书有效期自行计算续签时机</li>
+</ul>
+<p>而 RFC 9773 引入 ARI 后，协议层首次允许 CA 明确告诉客户端：这张证书的建议续签窗口（renewal window）<br><img src="https://resources.r2wind.cn/img/202512/ari-window.png" alt="ARI renewal window"><br>那这也就意味着一个出现了一个非常清晰的变化：以前大家都是靠经验在猜，或者依靠经验设置一些规则，而现在 CA 可以直接告诉我应该在哪个窗口期完成续签，这样就也不需要我猜来猜去了。<br>简单的来说ARI 并不会改变 ACME 的签发流程，它只会做一件事：那就是把“什么时候该续”这件事，从原来的实现经验，升级为现在协议可表达的信息。</p>
+<h2 id="为什么-ARI-对-short-lived-尤其重要？"><a href="#为什么-ARI-对-short-lived-尤其重要？" class="headerlink" title="为什么 ARI 对 short-lived 尤其重要？"></a>为什么 ARI 对 short-lived 尤其重要？</h2><p>7 天（其实不足 7 天）证书和 90 天证书在运维层面可以说完全不是一回事，在 90 天证书的时代，你算的不准也没关系，早几天晚几天续费都无所谓，比如在第 60 天续期和第 67 天续期没什么区别，大概率也不会出什么事情。<br>但当证书缩短到 7 天的时候，情况就变了，我猜你大概率应该不敢算不准了哈哈，这大概会导致两种极端的情况：</p>
+<ul>
+<li>续得太晚，直接过期，服务当场翻车</li>
+<li>续得太随意，今天续、明天又续，时间逻辑看起来一团乱（不过至少算是续上了）</li>
+</ul>
+<p>于是你作为运维，看到的大概率就会是这种非常拧巴的状态：证书文件本身是对的，而且HTTPS 访问也是正常的。但配置文件里、日志里写着的NextRenewTime、计划时间怎么看都不怎么合理。</p>
+<p>所以这时候你会很难判断一件事：“它现在这样，到底是正常的，还是哪里已经埋雷了？”而有了 ARI 之后，逻辑就会变得非常干脆：你不用再关心这是 7 天证书，还是 90 天证书，CA 会明确告诉你：这张证书，什么时候续最合适，你只需要听CA的指挥就好。续签节奏，也不再是客户端或者你的“个人理解”，而是 CA 给出的“官方答案”，出问题又可以甩锅了（bushi，开个玩笑哈哈</p>
+<h2 id="那现在的现状是怎样？"><a href="#那现在的现状是怎样？" class="headerlink" title="那现在的现状是怎样？"></a>那现在的现状是怎样？</h2><p>现实情况其实非常真实，也非常工程化（暂时还不亲民）。大概可以总结为三点：</p>
+<p>ARI 已经是正式的 ACME 扩展规范</p>
+<ul>
+<li>CA 侧（比如 Let’s Encrypt）已经在推进支持</li>
+<li>客户端侧，还在逐步跟进、逐步落地</li>
+</ul>
+<p>所以你现在看到的现象，往往会是这样的：short-lived 证书本身没有任何问题，实际的续签行为，也没问题（不包括续签的时机），但日志和列表中所展示出来的“计划续签时间”仍然沿用旧的计算逻辑，于是就出现了看起来好像哪里不太对，实际续签也没有任何问题（指的是你指定续签周期之后）这并不是你理解错了，而是协议已经往前走了半步，但客户端实现却还在追。</p>
+<p>或许在不远的将来，大多数的客户端都会实现对 ARI 协议的支持，比如 acme.sh 其实早在草案阶段就尝试去支持了 ARI ，不过还不知道因为什么原因还没有合并到主线。<br><img src="https://resources.r2wind.cn/img/202512/acme-ari-support.png" alt="acme.sh ari support"><br>但总的来说，这终归是 ACME 生态成熟的标志，靠经验-靠约定-再到靠协议，ARI 也正是这个演进过程中重要的一环。</p>
+<h2 id="END"><a href="#END" class="headerlink" title="END"></a>END</h2><p>ARI 的出现，并不是为了“修一个 bug”，而是为了让 ACME 进入下一个阶段。</p>
+<p>当证书不再是 90 天的固定节奏，<br>当 short-lived 成为常态，<br>唯一可靠的续签时间，<br>也就不再应该由客户端自己去猜了。</p>
+<p>如果你现在已经在用 IP short-lived 证书，那你现在看到 ARI，基本就等于提前看到了 ACME 或者说主流 ACME 客户端的下一步演进方向了。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8555">RFC 8555 - Automated Certificate Management Environment (ACME)</a></li>
+<li><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc9773">RFC 9773 - ACME Renewal Information (ARI) Extension</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/acmesh-official/acme.sh/tree/ari">acme.sh ari branch</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/acmesh-official/acme.sh/wiki/Profile-selection">acme.sh Profile selection</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://r2wind.cn">小泽</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://r2wind.cn/articles/20251220.html">https://r2wind.cn/articles/20251220.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://r2wind.cn" target="_blank">归去如风</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%AF%81%E4%B9%A6/">证书</a></div><div class="post-share"><div class="social-share" data-image="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img class="cover" src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</div></div><div class="info-2"><div class="info-item-1"> 之前在 Nginx-Quic 分支被合并到了 Nginx 主线的时候写过一篇使用 BoringSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3 的文章，详见 Nginx 编译开启 Quic 或 HTTP&#x2F;3，随着 Nginx 主线在 2025 年 7 月底（Nginx 1.29.0+）的一个提交中引入了对 OpenSSL QUIC 的适配支持（仅支持OpenSSL 3.5.1 及以上版本），本文将为您介绍如何使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP&#x2F;3。  OpenSSL 3.5.1 默认仅在较新的 Linux 发行版中可用，例如 Debian 13，本文以 Debian 13 为例进行演示。如果您使用的是较旧的发行版，可能需要手动编译 OpenSSL 3.5.1 或升级您的操作系统。   安装依赖123# Debian 13apt updateapt install build-essential ca-certificates zlib1g-dev libpcre2-dev tar unzip libs...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/articles/20230914.html" title="使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 &#x2F; 腾讯云（DNSPod）API 密钥版本）"><img class="cover" src="https://resources.r2wind.cn/img/202309/storm-8244663_1920.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-09-14</div><div class="info-item-2">使用 acme.sh 为在腾讯云（DNSPod）解析的域名自动申请证书（API3.0 &#x2F; 腾讯云（DNSPod）API 密钥版本）</div></div><div class="info-2"><div class="info-item-1"> ACME（自动证书管理环境）是一个互联网工程任务组维护的协议，它允许自动化 Web 服务器证书的部署，acme.sh 是支持 ACME 协议流行的客户端之一，可以通过其实现 SSL 证书的自动申请、续期等等。一直以来，使用 acme.sh 为域名申请证书都是通过 DNSPod API 来实现的，但由于 DNSPod API 后续将不再维护，同时旧版DNSPod API 将不再有服务承诺，以及旧版 API 存在着接口不稳定、权限无法细分控制、国内站和国际站接口不统一等问题，因此笔者基于 dns_dp 脚本，适配了腾讯云 API3.0 版本（dns_tencent）。升级后的脚本将同时支持 DNSPod 国内站和国际站（暂仅支持国内站，国际站部分接口官方团队正在排期适配，预计 2024Q2 完成），不再需要针对国内站和国际站单独适配，同时支持使用子账号 API 密钥申请证书，权限可细分控制，接口更加稳定，使用更加方便、安全。  2023-09-25 更新：腾讯云 API3.0 脚本已合并到 acme.sh master 分支，可直接升级 acme.sh 后使用或通过一键安装脚本，无...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://resources.r2wind.cn/img/avator.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">小泽</div><div class="author-info-description">一个自由自在的互联网民工</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">57</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/KincaidYang" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yjz@r2wind.org" target="_blank" title="Email"><i class="fas fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Welcome!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ACME-%E4%B8%80%E5%BC%80%E5%A7%8B%EF%BC%8C%E6%A0%B9%E6%9C%AC%E6%B2%A1%E5%AE%9A%E4%B9%89%E3%80%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E7%BB%AD%E3%80%8D"><span class="toc-number">1.</span> <span class="toc-text">ACME 一开始，根本没定义「什么时候续」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%AD%E6%9C%9F%E8%AF%81%E4%B9%A6%E4%B8%80%E5%87%BA%E7%8E%B0%EF%BC%8C%E8%BF%99%E5%A5%97%E9%80%BB%E8%BE%91%E5%BC%80%E5%A7%8B%E5%A4%B1%E7%81%B5"><span class="toc-number">2.</span> <span class="toc-text">短期证书一出现，这套逻辑开始失灵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ARI-%E6%98%AF%E5%B9%B2%E5%98%9B%E7%9A%84%EF%BC%9F%E4%B8%80%E5%8F%A5%E8%AF%9D%E5%B0%B1%E5%A4%9F%E4%BA%86"><span class="toc-number">3.</span> <span class="toc-text">ARI 是干嘛的？一句话就够了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-ARI-%E5%AF%B9-short-lived-%E5%B0%A4%E5%85%B6%E9%87%8D%E8%A6%81%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">为什么 ARI 对 short-lived 尤其重要？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%82%A3%E7%8E%B0%E5%9C%A8%E7%9A%84%E7%8E%B0%E7%8A%B6%E6%98%AF%E6%80%8E%E6%A0%B7%EF%BC%9F"><span class="toc-number">5.</span> <span class="toc-text">那现在的现状是怎样？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#END"><span class="toc-number">6.</span> <span class="toc-text">END</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"><img src="https://resources.r2wind.cn/img/202512/field-9295186_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了"/></a><div class="content"><a class="title" href="/articles/20251220.html" title="ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了">ARI是什么？ACME自动续签证书为什么不能再“自己算时间”了</a><time datetime="2025-12-20T06:08:02.000Z" title="发表于 2025-12-20 14:08:02">2025-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"><img src="https://resources.r2wind.cn/img/202512/mountain-lake-10009812_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3"/></a><div class="content"><a class="title" href="/articles/20251214.html" title="使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3">使用 OpenSSL 编译 Nginx 并开启 Quic 或 HTTP/3</a><time datetime="2025-12-14T12:30:30.000Z" title="发表于 2025-12-14 20:30:30">2025-12-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"><img src="https://resources.r2wind.cn/img/202507/website.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？"/></a><div class="content"><a class="title" href="/articles/20250722.html" title="CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？">CodeBuddy - 全球首款产设研一体的 AI 全栈工程师体验如何？</a><time datetime="2025-07-22T00:00:00.000Z" title="发表于 2025-07-22 08:00:00">2025-07-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek"><img src="https://resources.r2wind.cn/img/202502/robin-9376529_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用宝塔面板部署一个属于自己的 DeepSeek"/></a><div class="content"><a class="title" href="/articles/20250203.html" title="使用宝塔面板部署一个属于自己的 DeepSeek">使用宝塔面板部署一个属于自己的 DeepSeek</a><time datetime="2025-02-03T04:35:22.000Z" title="发表于 2025-02-03 12:35:22">2025-02-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板"><img src="https://resources.r2wind.cn/img/202412/winter-4680354_1920.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在 istoreos 上部署宝塔面板"/></a><div class="content"><a class="title" href="/articles/20241226.html" title="在 istoreos 上部署宝塔面板">在 istoreos 上部署宝塔面板</a><time datetime="2024-12-26T02:58:56.000Z" title="发表于 2024-12-26 10:58:56">2024-12-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://resources.r2wind.cn/background.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By 小泽</span><span class="framework-info"><span>Power By </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme By </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a><span class="footer-separator">|</span><span>CoverImage By </span><a target="_blank" rel="noopener" href="https://pixabay.com/">Pixabay</a></span></div><div class="footer_custom_text"><a href="https://beian.mps.gov.cn/#/query/webSearch?code=21132402000032" rel="noreferrer" target="_blank"><img src="https://resources.r2wind.cn/img/gaba.png" alt="公安备案" style="width:20px; height:20px; vertical-align:sub;">辽公网安备21132402000032</a> <a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>辽ICP备18005232号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://mirrors.r2wind.cn/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax data-prefix="busuanzi_value" src="https://vortex.r2wind.cn/js"></script></div></body></html>
